@@ -1,7 +1,6 @@
 package thanhanh.job_recruitment.service;
 
 import thanhanh.job_recruitment.domain.User;
-import thanhanh.job_recruitment.dto.response.ApiResponse;
 
 import java.util.List;
 

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import thanhanh.job_recruitment.domain.User;
 import thanhanh.job_recruitment.service.UserService;
 import thanhanh.job_recruitment.service.impl.UserServiceImpl;
+import thanhanh.job_recruitment.util.exception.IdInvalidException;
 
 import java.util.List;
 
@@ -28,7 +29,10 @@ public class UserController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteUser (@PathVariable("id") long id) {
+    public ResponseEntity<Void> deleteUser (@PathVariable("id") long id) throws IdInvalidException {
+        if (id > 1500) {
+            throw new IdInvalidException("Id khong hop le");
+        }
         this.userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
@@ -44,7 +48,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(this.userService.fetchAllUser()) ;
     }
 
-    @PutMapping
+    @PutMapping("/update")
     public ResponseEntity<User> updateUser (@RequestBody User user) {
         User currentUser = this.userService.updateUser(user);
         return ResponseEntity.status(HttpStatus.OK).body(currentUser);

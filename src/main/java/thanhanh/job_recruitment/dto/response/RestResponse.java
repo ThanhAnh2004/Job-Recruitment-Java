@@ -1,5 +1,6 @@
 package thanhanh.job_recruitment.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,8 +11,10 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ApiResponse<T> {
-    int code = 1000;
-    String message;
-    T result;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class RestResponse<T> {
+    int statusCode;
+    String error;
+    Object message;
+    T data;
 }
