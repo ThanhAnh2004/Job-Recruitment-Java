@@ -1,0 +1,19 @@
+package thanhanh.job_recruitment.dto.request;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class LoginRequest {
+    @NotBlank(message = "Username is not be empty")
+    String userName;
+
+    @NotBlank(message = "Password is not be empty")
+    String password;
+}

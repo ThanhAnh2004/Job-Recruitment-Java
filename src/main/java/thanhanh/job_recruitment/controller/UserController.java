@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import thanhanh.job_recruitment.domain.User;
+import thanhanh.job_recruitment.dto.request.UserRequest;
 import thanhanh.job_recruitment.service.UserService;
 import thanhanh.job_recruitment.service.impl.UserServiceImpl;
 import thanhanh.job_recruitment.util.exception.IdInvalidException;
@@ -23,7 +24,7 @@ public class UserController {
     UserService userService;
 
     @PostMapping("create")
-    public ResponseEntity<User> createUser (@RequestBody User user) {
+    public ResponseEntity<User> createUser (@RequestBody UserRequest user) {
         User newUser = this.userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }

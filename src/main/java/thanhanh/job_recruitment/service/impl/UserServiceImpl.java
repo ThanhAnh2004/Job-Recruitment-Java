@@ -3,9 +3,10 @@ package thanhanh.job_recruitment.service.impl;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.apache.coyote.BadRequestException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import thanhanh.job_recruitment.domain.User;
+import thanhanh.job_recruitment.dto.request.UserRequest;
 import thanhanh.job_recruitment.repository.UserRepository;
 import thanhanh.job_recruitment.service.UserService;
 
@@ -16,14 +17,17 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
     UserRepository userRepository;
+    PasswordEncoder passwordEncoder;
 
     @Override
-    public User createUser(User user) {
+    public User createUser(UserRequest user) {
+
+            String hashPassword = passwordEncoder.encode(user.getPassword());
 
             User newUser = User.builder()
                     .name(user.getName())
                     .email(user.getEmail())
-                    .password(user.getPassword())
+                    .password(hashPassword)
                     .build();
             return this.userRepository.save(newUser);
 
@@ -62,6 +66,11 @@ public class UserServiceImpl implements UserService {
         }
 
         return currentUser;
+    }
+
+    @Override
+    public User fetchUserByEmail(String email) {
+        return this.userRepository.findByEmail(email);
     }
 
 }
