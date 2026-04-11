@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     public void deleteUser(long id) {
         User user = this.userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Not found user"));
+                .orElseThrow(() -> new RuntimeException("Not found user"));
 
         this.userRepository.deleteById(id);
     }
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User fetchUserById(long id) {
         User user = this.userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Not found user"));
+                .orElseThrow(() -> new RuntimeException("Not found user"));
 
         return user;
     }
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(User user) {
         User currentUser = this.userRepository.findById(user.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Not found user"));
+                .orElseThrow(() -> new RuntimeException("Not found user"));
 
         if (currentUser != null) {
             currentUser.setName(user.getName());
