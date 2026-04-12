@@ -1,10 +1,15 @@
 package thanhanh.job_recruitment.service.impl;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import thanhanh.job_recruitment.domain.Company;
 import thanhanh.job_recruitment.dto.request.CompanyRequest;
 import thanhanh.job_recruitment.dto.response.CompanyResponse;
+import thanhanh.job_recruitment.dto.response.Meta;
+import thanhanh.job_recruitment.dto.response.ResultPagination;
 import thanhanh.job_recruitment.repository.CompanyRepository;
 import thanhanh.job_recruitment.service.CompanyService;
 
@@ -33,10 +38,23 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public List<CompanyResponse> fetchAllCompany() {
-        List<Company> allCompany = this.companyRepository.findAll();
+    public ResultPagination fetchAllCompany(Specification<Company> spec) {
+        List<Company> pageCompany = this.companyRepository.findAll(spec);
+//
+//        List<Company> allCompany = pageCompany.getContent();
+//
+       ResultPagination rs = new ResultPagination();
+       Meta meta = new Meta();
+//
+//       meta.setPage(pageCompany.getNumber() + 1);
+//       meta.setPages(pageCompany.getTotalPages());
+//       meta.setPageSize(pageCompany.getSize());
+//       meta.setTotal(pageCompany.getTotalElements());
+//
+       rs.setMeta(meta);
+       rs.setResult(pageCompany);
 
-        return allCompany.stream().map(company -> mapperCompanyToCompanyResponse(company)).toList();
+       return rs;
     }
 
     @Override
