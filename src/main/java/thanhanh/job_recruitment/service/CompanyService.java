@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface CompanyService {
     CompanyResponse createCompany (CompanyRequest companyRequest);
-    ResultPagination fetchAllCompany (Specification<Company> spec);
+    ResultPagination fetchAllCompany (Specification<Company> spec, Pageable pageable);
     CompanyResponse updateCompany (Company company);
     void deleteCompany (long id);
 }

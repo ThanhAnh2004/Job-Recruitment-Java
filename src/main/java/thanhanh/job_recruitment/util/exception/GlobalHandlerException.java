@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import thanhanh.job_recruitment.dto.response.RestResponse;
 
 
@@ -19,7 +20,8 @@ import java.util.List;
 public class GlobalHandlerException {
     @ExceptionHandler(value = {
             UsernameNotFoundException.class,
-            BadCredentialsException.class
+            BadCredentialsException.class,
+            IdInvalidException.class
     })
     public ResponseEntity<RestResponse<Object>> handleIdException (Exception exception) {
         RestResponse<Object> res = new RestResponse<>();
@@ -44,4 +46,16 @@ public class GlobalHandlerException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
 
     }
+
+    @ExceptionHandler(value = NoResourceFoundException.class)
+    public ResponseEntity<RestResponse<Object>> handleNotFoundException (NoResourceFoundException exception) {
+        RestResponse<Object> res = new RestResponse<>();
+        res.setError(exception.getMessage());
+        res.setMessage("Not found resource. UML not exist");
+        res.setStatusCode(HttpStatus.NOT_FOUND.value());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+
 }

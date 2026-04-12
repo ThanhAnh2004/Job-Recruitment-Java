@@ -3,14 +3,21 @@ package thanhanh.job_recruitment.service.impl;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import thanhanh.job_recruitment.domain.User;
 import thanhanh.job_recruitment.dto.request.UserRequest;
+import thanhanh.job_recruitment.dto.response.Meta;
+import thanhanh.job_recruitment.dto.response.ResultPagination;
+import thanhanh.job_recruitment.dto.response.UserResponse;
 import thanhanh.job_recruitment.repository.UserRepository;
 import thanhanh.job_recruitment.service.UserService;
 
-import java.util.List;
+
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -20,16 +27,23 @@ public class UserServiceImpl implements UserService {
     PasswordEncoder passwordEncoder;
 
     @Override
-    public User createUser(UserRequest user) {
+    public UserResponse createUser(UserRequest user) {
 
-            String hashPassword = passwordEncoder.encode(user.getPassword());
+        boolean checkExists = this.existsByEmail(user.getEmail());
+
+        String hashPassword = passwordEncoder.encode(user.getPassword());
 
             User newUser = User.builder()
                     .name(user.getName())
                     .email(user.getEmail())
                     .password(hashPassword)
+                    .age(user.getAge())
+                    .address(user.getAddress())
+                    .gender(user.getGender())
                     .build();
-            return this.userRepository.save(newUser);
+            this.userRepository.save(newUser);
+
+            return this.mapperUserToUserResponse(newUser);
 
     }
 
@@ -41,20 +55,35 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User fetchUserById(long id) {
-        User user = this.userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Not found user"));
+    public UserResponse fetchUserById(long id) {
+        Optional<User> userOptional = this.userRepository.findById(id);
 
-        return user;
+        return this.mapperUserToUserResponse(userOptional.get());
     }
 
     @Override
-    public List<User> fetchAllUser() {
-        return this.userRepository.findAll();
+    public ResultPagination fetchAllUser(Specification<User> spec, Pageable pageable) {
+        Page<User> pageUser = this.userRepository.findAll(spec, pageable);
+
+        Page<UserResponse> pageUserResponse = pageUser.map(this::mapperUserToUserResponse);
+
+        Meta meta = new Meta();
+        ResultPagination resultPagination = new ResultPagination();
+
+       meta.setPage(pageable.getPageNumber());
+       meta.setPageSize(pageable.getPageSize());
+       meta.setTotal(pageUserResponse.getTotalElements());
+       meta.setPages(pageUserResponse.getTotalPages());
+
+       resultPagination.setMeta(meta);
+       resultPagination.setResult(pageUserResponse.getContent());
+
+       return resultPagination;
+
     }
 
     @Override
-    public User updateUser(User user) {
+    public UserResponse updateUser(User user) {
         User currentUser = this.userRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("Not found user"));
 
@@ -65,12 +94,38 @@ public class UserServiceImpl implements UserService {
             this.userRepository.save(currentUser);
         }
 
-        return currentUser;
+        return this.mapperUserToUserResponse(currentUser);
     }
 
     @Override
     public User fetchUserByEmail(String email) {
-        return this.userRepository.findByEmail(email);
+        Optional<User> userOptional = this.userRepository.findByEmail(email);
+        return userOptional.get();
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return this.userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsById(long id) {
+        return this.userRepository.existsById(id);
+    }
+
+    private UserResponse mapperUserToUserResponse (User user) {
+        return UserResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .age(user.getAge())
+                .gender(user.getGender())
+                .address(user.getAddress())
+                .createdAt(user.getCreatedAt())
+                .createdBy(user.getCreatedBy())
+                .updatedAt(user.getUpdatedAt())
+                .updatedBy(user.getUpdatedBy())
+                .build();
     }
 
 }

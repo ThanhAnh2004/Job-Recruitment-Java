@@ -1,15 +1,19 @@
 package thanhanh.job_recruitment.service;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import thanhanh.job_recruitment.domain.User;
 import thanhanh.job_recruitment.dto.request.UserRequest;
-
-import java.util.List;
+import thanhanh.job_recruitment.dto.response.ResultPagination;
+import thanhanh.job_recruitment.dto.response.UserResponse;
 
 public interface UserService {
-    User createUser(UserRequest user);
+    UserResponse createUser(UserRequest user);
     void deleteUser(long id);
-    User fetchUserById (long id);
-    List<User> fetchAllUser ();
-    User updateUser (User user);
+    UserResponse fetchUserById (long id);
+    ResultPagination fetchAllUser (Specification<User> spec, Pageable pageable);
+    UserResponse updateUser (User user);
     User fetchUserByEmail(String email);
+    boolean existsByEmail(String email);
+    boolean existsById(long id);
 }

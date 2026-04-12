@@ -14,9 +14,8 @@ import thanhanh.job_recruitment.dto.request.CompanyRequest;
 import thanhanh.job_recruitment.dto.response.CompanyResponse;
 import thanhanh.job_recruitment.dto.response.ResultPagination;
 import thanhanh.job_recruitment.service.CompanyService;
+import thanhanh.job_recruitment.util.annotation.ApiMessage;
 
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/companies")
@@ -30,18 +29,12 @@ public class CompanyController {
     }
 
     @GetMapping()
+    @ApiMessage("Fetch all company")
     public  ResponseEntity<ResultPagination> fetchAllCompany (
-            @Filter Specification<Company> spec
-            // @RequestParam(value = "current") Optional<String> currentOptional,
-            // @RequestParam(value = "pageSize") Optional<String> pageSizeOptional
+            @Filter Specification<Company> spec,
+            Pageable pageable
             )  {
-//        String sCurrent = currentOptional.isPresent() ? currentOptional.get() : "";
-//        String sPageSize = pageSizeOptional.isPresent() ? pageSizeOptional.get() : "";
-//
-//        int current =  Integer.parseInt(sCurrent);
-//        int pageSize = Integer.parseInt(sPageSize);
-//        Pageable pageable = PageRequest.of(current -1, pageSize);
-        return ResponseEntity.ok().body(this.companyService.fetchAllCompany(spec));
+        return ResponseEntity.ok().body(this.companyService.fetchAllCompany(spec, pageable));
     }
 
     @PutMapping("")

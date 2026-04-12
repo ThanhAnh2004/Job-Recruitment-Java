@@ -38,21 +38,18 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public ResultPagination fetchAllCompany(Specification<Company> spec) {
-        List<Company> pageCompany = this.companyRepository.findAll(spec);
-//
-//        List<Company> allCompany = pageCompany.getContent();
-//
+    public ResultPagination fetchAllCompany(Specification<Company> spec, Pageable pageable) {
+        Page<Company> pageCompany = this.companyRepository.findAll(spec, pageable);
+
        ResultPagination rs = new ResultPagination();
        Meta meta = new Meta();
-//
-//       meta.setPage(pageCompany.getNumber() + 1);
-//       meta.setPages(pageCompany.getTotalPages());
-//       meta.setPageSize(pageCompany.getSize());
-//       meta.setTotal(pageCompany.getTotalElements());
-//
+
+       meta.setPage(pageable.getPageNumber()+ 1);
+       meta.setPages(pageCompany.getTotalPages());
+       meta.setPageSize(pageable.getPageSize());
+       meta.setTotal(pageCompany.getTotalElements());
        rs.setMeta(meta);
-       rs.setResult(pageCompany);
+       rs.setResult(pageCompany.getContent());
 
        return rs;
     }
