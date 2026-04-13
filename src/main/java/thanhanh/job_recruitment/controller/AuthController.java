@@ -13,9 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import thanhanh.job_recruitment.domain.User;
 import thanhanh.job_recruitment.dto.request.Auth.LoginRequest;
 import thanhanh.job_recruitment.dto.response.Auth.LoginResponse;
@@ -25,6 +23,7 @@ import thanhanh.job_recruitment.util.SecurityUtil;
 import thanhanh.job_recruitment.util.annotation.ApiMessage;
 
 @RestController
+@RequestMapping("/auth")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class AuthController {
@@ -35,11 +34,11 @@ public class AuthController {
 
     @NonFinal
     @Value("${jwt.refresh-token-validity-in-seconds}")
-    private long refreshTokenExpiration;
+    long refreshTokenExpiration;
 
     @PostMapping("/login")
     @ApiMessage("Login success")
-    public ResponseEntity<LoginResponse> login (@Valid @RequestBody LoginRequest loginRequest ) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
 
         // add input include username/password into Security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -52,37 +51,60 @@ public class AuthController {
                 .getObject()
                 .authenticate(authenticationToken);
 
+        User currentUser = this.userService.fetchUserByEmail(loginRequest.getUserName());
+        UserLoginResponse user = new UserLoginResponse();
+
+        if (currentUser != null) {
+            user = UserLoginResponse.builder()
+                    .id(currentUser.getId())
+                    .email(currentUser.getEmail())
+                    .name(currentUser.getName())
+                    .build();
+        }
+
         // set user information log into context (will maybe use)
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String accessToken = this.securityUtil.createAccessToken(authentication);
+        String accessToken = this.securityUtil.createAccessToken(authentication, user);
         String refreshToken = this.securityUtil.createRefreshToken(authentication);
 
         // Update refresh token into database
         this.userService.updateUserToken(refreshToken, loginRequest.getUserName());
 
         ResponseCookie resCookies = ResponseCookie
-                .from("refresh_token",refreshToken)
+                .from("refresh_token", refreshToken)
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
                 .maxAge(refreshTokenExpiration)
                 .build();
 
-        User currentUser = this.userService.fetchUserByEmail(loginRequest.getUserName());
-        UserLoginResponse user = UserLoginResponse.builder()
-                .id(currentUser.getId())
-                .email(currentUser.getEmail())
-                .name(currentUser.getName())
+        LoginResponse response = LoginResponse.builder()
+                .accessToken(accessToken)
+                .user(user)
                 .build();
-
-            LoginResponse response = LoginResponse.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .user(user)
-                    .build();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, resCookies.toString())
                 .body(response);
+    }
+
+    @GetMapping("/account")
+    @ApiMessage("Get account information")
+    public ResponseEntity<UserLoginResponse> getAccount() {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get() : "";
+
+        User currentUser = this.userService.fetchUserByEmail(email);
+        UserLoginResponse userLogin = new UserLoginResponse();
+
+        if (currentUser != null) {
+            userLogin = UserLoginResponse.builder()
+                    .id(currentUser.getId())
+                    .email(currentUser.getEmail())
+                    .name(currentUser.getName())
+                    .build();
+        }
+
+        return ResponseEntity.ok().body(userLogin);
     }
 }

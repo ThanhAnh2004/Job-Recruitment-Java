@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import thanhanh.job_recruitment.dto.response.Auth.LoginResponse;
+import thanhanh.job_recruitment.dto.response.Auth.UserLoginResponse;
 
 
 import java.time.Instant;
@@ -37,7 +38,7 @@ public class SecurityUtil {
         this.jwtEncoder = jwtEncoder;
     }
 
-    public String createAccessToken (Authentication authentication) {
+    public String createAccessToken (Authentication authentication, UserLoginResponse user) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
 
@@ -47,8 +48,7 @@ public class SecurityUtil {
                 .subject(authentication.getName())
                 .issuedAt(now)
                 .expiresAt(validity)
-                .claim("Email", authentication.getName())
-             //   .claim("Role", authentication.getAuthorities())
+                .claim("User", user)
                 .build();
 
         return this.jwtEncoder.encode(JwtEncoderParameters.from(header, payload)).getTokenValue();

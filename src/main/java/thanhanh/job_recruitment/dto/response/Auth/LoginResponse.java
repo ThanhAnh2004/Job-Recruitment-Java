@@ -12,6 +12,5 @@ import lombok.experimental.FieldDefaults;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LoginResponse {
     String accessToken;
-    String refreshToken;
     UserLoginResponse user;
 }
