@@ -123,6 +123,13 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public User fetchUserByTokenAndEmail(String token, String email) {
+        Optional<User> userOptional = this.userRepository.findByRefreshTokenAndEmail(token, email);
+
+        return userOptional.get();
+    }
+
     private UserResponse mapperUserToUserResponse (User user) {
         return UserResponse.builder()
                 .id(user.getId())

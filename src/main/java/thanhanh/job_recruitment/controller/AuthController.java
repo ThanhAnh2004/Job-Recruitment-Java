@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import thanhanh.job_recruitment.domain.User;
 import thanhanh.job_recruitment.dto.request.Auth.LoginRequest;
@@ -21,6 +22,7 @@ import thanhanh.job_recruitment.dto.response.Auth.UserLoginResponse;
 import thanhanh.job_recruitment.service.UserService;
 import thanhanh.job_recruitment.util.SecurityUtil;
 import thanhanh.job_recruitment.util.annotation.ApiMessage;
+import thanhanh.job_recruitment.util.exception.IdInvalidException;
 
 @RestController
 @RequestMapping("/auth")
@@ -64,8 +66,8 @@ public class AuthController {
 
         // set user information log into context (will maybe use)
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String accessToken = this.securityUtil.createAccessToken(authentication, user);
-        String refreshToken = this.securityUtil.createRefreshToken(authentication);
+        String accessToken = this.securityUtil.createAccessToken(authentication.getName(), user);
+        String refreshToken = this.securityUtil.createRefreshToken(loginRequest.getUserName());
 
         // Update refresh token into database
         this.userService.updateUserToken(refreshToken, loginRequest.getUserName());
@@ -107,4 +109,54 @@ public class AuthController {
 
         return ResponseEntity.ok().body(userLogin);
     }
+
+    @GetMapping("/refresh")
+    @ApiMessage("Get refresh token by user")
+    public ResponseEntity<LoginResponse> getRefreshToken(@CookieValue("refresh_token") String refreshToken) throws IdInvalidException {
+
+        // Check valid refresh token
+        Jwt decodedToken = this.securityUtil.checkValidRefreshToken(refreshToken);
+
+        String email = decodedToken.getSubject();
+
+        // Check user by token + email
+        User currentUser = this.userService.fetchUserByTokenAndEmail(refreshToken, email);
+
+        if (currentUser == null) {
+            throw new IdInvalidException("Refresh token invalid");
+        }
+
+        // Issue new token/ set refresh token as cookies
+        UserLoginResponse user = new UserLoginResponse();
+
+            user = UserLoginResponse.builder()
+                    .id(currentUser.getId())
+                    .email(currentUser.getEmail())
+                    .name(currentUser.getName())
+                    .build();
+
+        // set user information log into context (will maybe use)
+        String accessToken = this.securityUtil.createAccessToken(email, user);
+        String newRefreshToken = this.securityUtil.createRefreshToken(email);
+
+        // Update refresh token into database
+        this.userService.updateUserToken(newRefreshToken, email);
+
+        ResponseCookie resCookies = ResponseCookie
+                .from("refresh_token", newRefreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(refreshTokenExpiration)
+                .build();
+
+        LoginResponse response = LoginResponse.builder()
+                .accessToken(accessToken)
+                .user(user)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, resCookies.toString())
+                .body(response);
+}
 }

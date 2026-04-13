@@ -17,4 +17,5 @@ public interface UserService {
     boolean existsByEmail(String email);
     boolean existsById(long id);
     void updateUserToken (String token, String email);
+    User fetchUserByTokenAndEmail (String token, String email);
 }

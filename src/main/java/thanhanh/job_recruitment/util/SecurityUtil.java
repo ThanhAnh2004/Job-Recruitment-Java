@@ -1,6 +1,7 @@
 package thanhanh.job_recruitment.util;
 
 import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.util.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -13,6 +14,8 @@ import thanhanh.job_recruitment.dto.response.Auth.LoginResponse;
 import thanhanh.job_recruitment.dto.response.Auth.UserLoginResponse;
 
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
@@ -38,14 +41,14 @@ public class SecurityUtil {
         this.jwtEncoder = jwtEncoder;
     }
 
-    public String createAccessToken (Authentication authentication, UserLoginResponse user) {
+    public String createAccessToken (String email, UserLoginResponse user) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
 
         JwsHeader header = JwsHeader.with(JWT_ALGORITHM).build();
 
         JwtClaimsSet payload = JwtClaimsSet.builder()
-                .subject(authentication.getName())
+                .subject(email)
                 .issuedAt(now)
                 .expiresAt(validity)
                 .claim("User", user)
@@ -54,21 +57,46 @@ public class SecurityUtil {
         return this.jwtEncoder.encode(JwtEncoderParameters.from(header, payload)).getTokenValue();
     }
 
-    public String createRefreshToken (Authentication authentication) {
+    public String createRefreshToken (String email) {
         Instant now = Instant.now();
         Instant validity = Instant.now().plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
 
         JwsHeader header = JwsHeader.with(JWT_ALGORITHM).build();
 
         JwtClaimsSet payload = JwtClaimsSet.builder()
-                .subject(authentication.getName())
+                .subject(email)
                 .issuedAt(Instant.now())
                 .expiresAt(validity)
-                .claim("Email", authentication.getName())
+                .claim("Email", email)
                 .build();
 
         return this.jwtEncoder.encode(JwtEncoderParameters.from(header,payload)).getTokenValue();
     }
+
+    public Jwt checkValidRefreshToken (String refreshToken) {
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
+                .withSecretKey(getSecretKey())
+                .macAlgorithm(SecurityUtil.JWT_ALGORITHM)
+                .build();
+
+        try {
+            return jwtDecoder.decode(refreshToken);
+        } catch (Exception e) {
+            System.out.println(">>> Refresh token error: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    private SecretKey getSecretKey() {
+        byte[] keyBytes = Base64.from(jwtKey).decode();
+        return new SecretKeySpec(
+                keyBytes,
+                0,
+                keyBytes.length,
+                JWT_ALGORITHM.getName()
+        );
+    }
+
 
     /**
      * Get the login of the current user.
