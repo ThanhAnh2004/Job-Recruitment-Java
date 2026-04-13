@@ -1,6 +1,5 @@
 package thanhanh.job_recruitment.util.exception;
 
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -11,8 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import thanhanh.job_recruitment.dto.response.RestResponse;
-
+import thanhanh.job_recruitment.dto.response.ApiResponse.RestResponse;
 
 import java.util.List;
 
@@ -28,6 +26,7 @@ public class GlobalHandlerException {
         res.setError(exception.getMessage());
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setMessage("Exception occurs...");
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
@@ -56,6 +55,5 @@ public class GlobalHandlerException {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
-
 
 }

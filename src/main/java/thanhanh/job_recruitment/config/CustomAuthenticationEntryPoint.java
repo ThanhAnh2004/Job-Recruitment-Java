@@ -8,7 +8,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import thanhanh.job_recruitment.dto.response.RestResponse;
+import thanhanh.job_recruitment.dto.response.ApiResponse.RestResponse;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;

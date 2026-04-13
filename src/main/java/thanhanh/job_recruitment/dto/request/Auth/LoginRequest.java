@@ -1,4 +1,4 @@
-package thanhanh.job_recruitment.dto.request;
+package thanhanh.job_recruitment.dto.request.Auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;

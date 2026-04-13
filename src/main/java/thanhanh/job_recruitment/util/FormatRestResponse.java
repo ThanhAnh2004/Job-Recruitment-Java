@@ -9,7 +9,7 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
-import thanhanh.job_recruitment.dto.response.RestResponse;
+import thanhanh.job_recruitment.dto.response.ApiResponse.RestResponse;
 import thanhanh.job_recruitment.util.annotation.ApiMessage;
 
 @RestControllerAdvice

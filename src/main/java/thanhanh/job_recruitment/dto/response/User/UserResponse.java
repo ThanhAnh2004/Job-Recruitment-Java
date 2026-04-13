@@ -1,7 +1,6 @@
-package thanhanh.job_recruitment.dto.response;
+package thanhanh.job_recruitment.dto.response.User;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

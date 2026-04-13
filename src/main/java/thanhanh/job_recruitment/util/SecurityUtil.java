@@ -1,5 +1,6 @@
 package thanhanh.job_recruitment.util;
 
+import com.nimbusds.jose.JWSHeader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -8,10 +9,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
+import thanhanh.job_recruitment.dto.response.Auth.LoginResponse;
 
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -25,15 +28,18 @@ public class SecurityUtil {
     private String jwtKey;
 
     @Value("${jwt.access-token-validity-in-seconds}")
-    private long jwtExpiration;
+    private long accessTokenExpiration;
+
+    @Value("${jwt.refresh-token-validity-in-seconds}")
+    private long refreshTokenExpiration;
 
     public SecurityUtil(JwtEncoder jwtEncoder) {
         this.jwtEncoder = jwtEncoder;
     }
 
-    public String createToken (Authentication authentication) {
+    public String createAccessToken (Authentication authentication) {
         Instant now = Instant.now();
-        Instant validity = now.plus(this.jwtExpiration, ChronoUnit.SECONDS);
+        Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
 
         JwsHeader header = JwsHeader.with(JWT_ALGORITHM).build();
 
@@ -41,10 +47,27 @@ public class SecurityUtil {
                 .subject(authentication.getName())
                 .issuedAt(now)
                 .expiresAt(validity)
-         //       .claim("TEST", authentication)
+                .claim("Email", authentication.getName())
+             //   .claim("Role", authentication.getAuthorities())
                 .build();
 
         return this.jwtEncoder.encode(JwtEncoderParameters.from(header, payload)).getTokenValue();
+    }
+
+    public String createRefreshToken (Authentication authentication) {
+        Instant now = Instant.now();
+        Instant validity = Instant.now().plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
+
+        JwsHeader header = JwsHeader.with(JWT_ALGORITHM).build();
+
+        JwtClaimsSet payload = JwtClaimsSet.builder()
+                .subject(authentication.getName())
+                .issuedAt(Instant.now())
+                .expiresAt(validity)
+                .claim("Email", authentication.getName())
+                .build();
+
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(header,payload)).getTokenValue();
     }
 
     /**

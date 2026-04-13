@@ -9,10 +9,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import thanhanh.job_recruitment.domain.User;
-import thanhanh.job_recruitment.dto.request.UserRequest;
-import thanhanh.job_recruitment.dto.response.Meta;
-import thanhanh.job_recruitment.dto.response.ResultPagination;
-import thanhanh.job_recruitment.dto.response.UserResponse;
+import thanhanh.job_recruitment.dto.request.User.UserRequest;
+import thanhanh.job_recruitment.dto.response.ApiResponse.Meta;
+import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
+import thanhanh.job_recruitment.dto.response.User.UserResponse;
 import thanhanh.job_recruitment.repository.UserRepository;
 import thanhanh.job_recruitment.service.UserService;
 
@@ -111,6 +111,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existsById(long id) {
         return this.userRepository.existsById(id);
+    }
+
+    @Override
+    public void updateUserToken(String token, String email) {
+        User currentUser = this.fetchUserByEmail(email);
+
+        if (currentUser != null) {
+            currentUser.setRefreshToken(token);
+            this.userRepository.save(currentUser);
+        }
     }
 
     private UserResponse mapperUserToUserResponse (User user) {

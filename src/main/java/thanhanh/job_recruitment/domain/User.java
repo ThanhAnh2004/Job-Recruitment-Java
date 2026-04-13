@@ -40,7 +40,7 @@ public class User {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "refreshToken")
+    @Column(name = "refreshToken", columnDefinition = "MEDIUMTEXT")
     private String refreshToken;
 
     @Column(name = "createdAt")

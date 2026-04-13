@@ -3,9 +3,9 @@ package thanhanh.job_recruitment.service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import thanhanh.job_recruitment.domain.User;
-import thanhanh.job_recruitment.dto.request.UserRequest;
-import thanhanh.job_recruitment.dto.response.ResultPagination;
-import thanhanh.job_recruitment.dto.response.UserResponse;
+import thanhanh.job_recruitment.dto.request.User.UserRequest;
+import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
+import thanhanh.job_recruitment.dto.response.User.UserResponse;
 
 public interface UserService {
     UserResponse createUser(UserRequest user);
@@ -16,4 +16,5 @@ public interface UserService {
     User fetchUserByEmail(String email);
     boolean existsByEmail(String email);
     boolean existsById(long id);
+    void updateUserToken (String token, String email);
 }

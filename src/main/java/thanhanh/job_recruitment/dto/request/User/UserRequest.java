@@ -1,6 +1,5 @@
-package thanhanh.job_recruitment.dto.request;
+package thanhanh.job_recruitment.dto.request.User;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import thanhanh.job_recruitment.util.constant.GenderEnum;

@@ -1,4 +1,4 @@
-package thanhanh.job_recruitment.dto.response;
+package thanhanh.job_recruitment.dto.response.ApiResponse;
 
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -12,14 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import thanhanh.job_recruitment.domain.User;
-import thanhanh.job_recruitment.dto.request.UserRequest;
-import thanhanh.job_recruitment.dto.response.ResultPagination;
-import thanhanh.job_recruitment.dto.response.UserResponse;
+import thanhanh.job_recruitment.dto.request.User.UserRequest;
+import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
+import thanhanh.job_recruitment.dto.response.User.UserResponse;
 import thanhanh.job_recruitment.service.UserService;
 import thanhanh.job_recruitment.util.annotation.ApiMessage;
 import thanhanh.job_recruitment.util.exception.IdInvalidException;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")

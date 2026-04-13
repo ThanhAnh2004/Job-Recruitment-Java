@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import thanhanh.job_recruitment.domain.User;
-import thanhanh.job_recruitment.dto.response.UserResponse;
 import thanhanh.job_recruitment.service.UserService;
 
 import java.util.Collections;

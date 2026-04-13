@@ -6,14 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import thanhanh.job_recruitment.domain.Company;
-import thanhanh.job_recruitment.dto.request.CompanyRequest;
-import thanhanh.job_recruitment.dto.response.CompanyResponse;
-import thanhanh.job_recruitment.dto.response.Meta;
-import thanhanh.job_recruitment.dto.response.ResultPagination;
+import thanhanh.job_recruitment.dto.request.Company.CompanyRequest;
+import thanhanh.job_recruitment.dto.response.Company.CompanyResponse;
+import thanhanh.job_recruitment.dto.response.ApiResponse.Meta;
+import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
 import thanhanh.job_recruitment.repository.CompanyRepository;
 import thanhanh.job_recruitment.service.CompanyService;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
