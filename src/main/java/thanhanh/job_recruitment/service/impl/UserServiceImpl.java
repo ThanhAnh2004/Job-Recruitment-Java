@@ -84,15 +84,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse updateUser(User user) {
-        User currentUser = this.userRepository.findById(user.getId())
-                .orElseThrow(() -> new RuntimeException("Not found user"));
+        User currentUser = this.userRepository.findById(user.getId()).get();
 
-        if (currentUser != null) {
-            currentUser.setName(user.getName());
-            currentUser.setEmail(user.getEmail());
-            currentUser.setPassword(user.getPassword());
-            this.userRepository.save(currentUser);
-        }
+        currentUser.setName(user.getName());
+        currentUser.setEmail(user.getEmail());
+        currentUser.setPassword(user.getPassword());
+        currentUser.setRefreshToken(user.getRefreshToken());
+        this.userRepository.save(currentUser);
 
         return this.mapperUserToUserResponse(currentUser);
     }
