@@ -9,29 +9,20 @@ import java.time.Instant;
 import java.util.List;
 
 @Entity
-@Table(name = "companies")
+@Table(name = "skills")
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Company {
+public class Skill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
     @Column (name = "name")
     String name;
-
-    @Column(name = "description", columnDefinition = "MEDIUMTEXT")
-    String description;
-
-    @Column(name = "address")
-    String address;
-
-    @Column(name = "logo")
-    String logo;
 
     @Column(name = "createdAt")
     Instant createdAt;
@@ -45,26 +36,20 @@ public class Company {
     @Column(name = "updatedBy")
     String updatedBy;
 
-    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
-    List<User> users;
-
-    @OneToMany(mappedBy = "company",fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "skills")
     List<Job> jobs;
 
     @PrePersist
     public void handleBeforeCreate () {
-        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-                ? SecurityUtil.getCurrentUserLogin().get() : "";
-
+        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get() : null;
         this.createdAt = Instant.now();
     }
 
     @PreUpdate
-    public void handleBeforeUpdate() {
-        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-                ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
-
+    public void handleBeforeUpdate () {
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get() : null;
         this.updatedAt = Instant.now();
     }
 }

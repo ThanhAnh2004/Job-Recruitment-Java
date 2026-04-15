@@ -6,13 +6,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import thanhanh.job_recruitment.domain.Company;
+import thanhanh.job_recruitment.domain.User;
 import thanhanh.job_recruitment.dto.request.Company.CompanyRequest;
 import thanhanh.job_recruitment.dto.response.Company.CompanyResponse;
 import thanhanh.job_recruitment.dto.response.ApiResponse.Meta;
 import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
 import thanhanh.job_recruitment.repository.CompanyRepository;
+import thanhanh.job_recruitment.repository.UserRepository;
 import thanhanh.job_recruitment.service.CompanyService;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +23,7 @@ import java.util.Optional;
 public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
 
 
     @Override
@@ -76,7 +80,10 @@ public class CompanyServiceImpl implements CompanyService {
         Optional<Company> companyOptional = this.companyRepository.findById(id);
 
         if (companyOptional.isPresent()) {
-            this.companyRepository.delete(companyOptional.get());
+            Company company = companyOptional.get();
+            List<User> listUsers = this.userRepository.findByCompany(company);
+            this.userRepository.deleteAll(listUsers);
+            this.companyRepository.delete(company);
         }
     }
 
