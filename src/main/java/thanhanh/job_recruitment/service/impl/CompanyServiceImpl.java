@@ -39,6 +39,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public ResultPagination fetchAllCompany(Specification<Company> spec, Pageable pageable) {
         Page<Company> pageCompany = this.companyRepository.findAll(spec, pageable);
+        Page<CompanyResponse> pageCompanyResponse = pageCompany.map(company ->this.mapperCompanyToCompanyResponse(company));
 
        ResultPagination rs = new ResultPagination();
        Meta meta = new Meta();
@@ -48,7 +49,7 @@ public class CompanyServiceImpl implements CompanyService {
        meta.setPageSize(pageable.getPageSize());
        meta.setTotal(pageCompany.getTotalElements());
        rs.setMeta(meta);
-       rs.setResult(pageCompany.getContent());
+       rs.setResult(pageCompanyResponse.getContent());
 
        return rs;
     }

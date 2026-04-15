@@ -17,7 +17,7 @@ import thanhanh.job_recruitment.util.annotation.ApiMessage;
 
 
 @RestController
-@RequestMapping("/companies")
+@RequestMapping("/api/v1/companies")
 @AllArgsConstructor
 public class CompanyController {
     private final CompanyService companyService;

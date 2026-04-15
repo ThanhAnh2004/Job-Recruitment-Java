@@ -20,7 +20,7 @@ import thanhanh.job_recruitment.util.annotation.ApiMessage;
 import thanhanh.job_recruitment.util.exception.IdInvalidException;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {

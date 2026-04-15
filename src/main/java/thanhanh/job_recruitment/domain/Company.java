@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import thanhanh.job_recruitment.util.SecurityUtil;
 
 import java.time.Instant;
+import java.util.Set;
 
 
 @Entity
@@ -44,6 +45,9 @@ public class Company {
 
     @Column(name = "updatedBy")
     String updatedBy;
+
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    Set<User> users;
 
     @PrePersist
     public void handleBeforeCreate () {

@@ -25,7 +25,7 @@ import thanhanh.job_recruitment.util.annotation.ApiMessage;
 import thanhanh.job_recruitment.util.exception.IdInvalidException;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class AuthController {
@@ -92,12 +92,13 @@ public class AuthController {
 
     @GetMapping("/account")
     @ApiMessage("Get account information")
-    public ResponseEntity<UserLoginResponse> getAccount() {
+    public ResponseEntity<LoginResponse.UserGetAccount> getAccount() {
         String email = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get() : "";
 
         User currentUser = this.userService.fetchUserByEmail(email);
-        UserLoginResponse userLogin = new UserLoginResponse();
+
+       UserLoginResponse userLogin = new UserLoginResponse();
 
         if (currentUser != null) {
             userLogin = UserLoginResponse.builder()
@@ -107,7 +108,10 @@ public class AuthController {
                     .build();
         }
 
-        return ResponseEntity.ok().body(userLogin);
+        LoginResponse.UserGetAccount userGetAccount = new LoginResponse.UserGetAccount();
+        userGetAccount.setUser(userLogin);
+
+        return ResponseEntity.ok().body(userGetAccount);
     }
 
     @GetMapping("/refresh")

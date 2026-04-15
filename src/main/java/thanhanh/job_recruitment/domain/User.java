@@ -1,12 +1,12 @@
 package thanhanh.job_recruitment.domain;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+
 import jakarta.persistence.*;
 import lombok.*;
 import thanhanh.job_recruitment.util.SecurityUtil;
 import thanhanh.job_recruitment.util.constant.GenderEnum;
 
-import java.security.Security;
+
 import java.time.Instant;
 
 @Entity
@@ -54,6 +54,10 @@ public class User {
 
     @Column(name = "updatedBy")
     String updatedBy;
+
+    @ManyToOne
+    @JoinColumn (name = "company_id")
+    Company company;
 
     @PrePersist
     public void handleCreateUser() {

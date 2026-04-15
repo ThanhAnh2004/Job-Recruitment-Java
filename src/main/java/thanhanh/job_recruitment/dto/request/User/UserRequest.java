@@ -2,6 +2,7 @@ package thanhanh.job_recruitment.dto.request.User;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import thanhanh.job_recruitment.domain.Company;
 import thanhanh.job_recruitment.util.constant.GenderEnum;
 
 @Setter
@@ -14,4 +15,5 @@ public class UserRequest {
     int age;
     GenderEnum gender;
     String address;
+    Company company;
 }
