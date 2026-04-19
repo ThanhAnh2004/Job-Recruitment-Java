@@ -1,5 +1,6 @@
 package thanhanh.job_recruitment.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +25,9 @@ public class Job {
 
     @Column(name = "name")
     String name;
+
+    @Column(name = "location")
+    String location;
 
     @Column(name = "salary")
     double salary;
@@ -64,6 +68,7 @@ public class Job {
     Company company;
 
     @ManyToMany(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = {"jobs"})
     @JoinTable(name = "job_skill", joinColumns = @JoinColumn(name = "job_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
     List<Skill> skills;
 

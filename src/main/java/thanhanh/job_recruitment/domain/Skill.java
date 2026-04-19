@@ -1,5 +1,6 @@
 package thanhanh.job_recruitment.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -37,6 +38,7 @@ public class Skill {
     String updatedBy;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "skills")
+    @JsonIgnore
     List<Job> jobs;
 
     @PrePersist
