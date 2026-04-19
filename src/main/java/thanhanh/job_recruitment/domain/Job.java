@@ -1,5 +1,6 @@
 package thanhanh.job_recruitment.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -71,6 +72,11 @@ public class Job {
     @JsonIgnoreProperties(value = {"jobs"})
     @JoinTable(name = "job_skill", joinColumns = @JoinColumn(name = "job_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
     List<Skill> skills;
+
+    @OneToMany(mappedBy = "job", fetch = FetchType.LAZY)
+    @JsonIgnore
+    List<Resume> resumes;
+
 
     @PrePersist
     public void handleBeforeCreate () {

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import thanhanh.job_recruitment.dto.request.Job.CreateJobRequest;
@@ -23,7 +24,7 @@ public class JobController {
     @PostMapping("/create")
     @ApiMessage("Create a new job")
     public ResponseEntity<JobResponse> createJob(@RequestBody CreateJobRequest request) {
-        return ResponseEntity.ok().body(this.jobService.createJob(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.jobService.createJob(request));
     }
 
     @PostMapping("/update")

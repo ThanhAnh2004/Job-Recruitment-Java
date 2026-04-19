@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import thanhanh.job_recruitment.domain.Skill;
@@ -35,7 +36,7 @@ public class SkillController {
             throw new IdInvalidException("Skill has existed");
         }
 
-        return ResponseEntity.ok().body(this.skillService.createSkill(skillRequest));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.skillService.createSkill(skillRequest));
     }
 
     @PutMapping("/update")

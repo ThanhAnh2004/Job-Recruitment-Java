@@ -1,6 +1,7 @@
 package thanhanh.job_recruitment.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import thanhanh.job_recruitment.util.SecurityUtil;
@@ -8,6 +9,7 @@ import thanhanh.job_recruitment.util.constant.GenderEnum;
 
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -58,6 +60,11 @@ public class User {
     @ManyToOne
     @JoinColumn (name = "company_id")
     Company company;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
+    List<Resume> resumes;
+
 
     @PrePersist
     public void handleCreateUser() {
