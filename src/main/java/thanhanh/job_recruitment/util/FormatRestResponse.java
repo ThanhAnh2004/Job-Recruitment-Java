@@ -3,6 +3,7 @@ package thanhanh.job_recruitment.util;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -32,7 +33,7 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
                 ((ServletServerHttpResponse) response).getServletResponse();
         int status = servletResponse.getStatus();
 
-        if (body instanceof String) {
+        if (body instanceof String || body instanceof Resource) {
             return body;
         }
 
