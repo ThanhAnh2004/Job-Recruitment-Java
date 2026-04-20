@@ -62,4 +62,12 @@ public class Permission {
                 ? SecurityUtil.getCurrentUserLogin().get() : null;
         this.updatedAt = Instant.now();
     }
+
+    public Permission(String name, String apiPath, String method, String module) {
+        this.name = name;
+        this.apiPath = apiPath;
+        this.method = method;
+        this.module = module;
+    }
+
 }

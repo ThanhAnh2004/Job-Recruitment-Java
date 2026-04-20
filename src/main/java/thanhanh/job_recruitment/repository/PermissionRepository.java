@@ -11,4 +11,10 @@ import java.util.List;
 public interface PermissionRepository extends JpaRepository<Permission, Long>, JpaSpecificationExecutor<Permission> {
     boolean existsById(long id);
     List<Permission> findByIdIn(List<Long> id);
+    boolean existsByModuleAndApiPathAndMethod(
+            String module,
+            String apiPart,
+            String method
+    );
+
 }

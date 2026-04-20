@@ -59,6 +59,14 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public RoleResponse fetchRoleById(long id) {
+        Role currentRole = this.roleRepository.findById(id).get();
+
+
+        return this.mapperRoleToRoleResponse(currentRole);
+    }
+
+    @Override
     public boolean checkExitsById(long id) {
         return this.roleRepository.existsById(id);
     }

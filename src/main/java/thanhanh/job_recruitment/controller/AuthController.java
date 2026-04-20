@@ -7,18 +7,22 @@ import lombok.experimental.NonFinal;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import thanhanh.job_recruitment.domain.User;
 import thanhanh.job_recruitment.dto.request.Auth.LoginRequest;
+import thanhanh.job_recruitment.dto.request.User.UserRequest;
 import thanhanh.job_recruitment.dto.response.Auth.LoginResponse;
 import thanhanh.job_recruitment.dto.response.Auth.UserLoginResponse;
+import thanhanh.job_recruitment.dto.response.User.UserResponse;
 import thanhanh.job_recruitment.service.UserService;
 import thanhanh.job_recruitment.util.SecurityUtil;
 import thanhanh.job_recruitment.util.annotation.ApiMessage;
@@ -33,6 +37,7 @@ public class AuthController {
     AuthenticationManagerBuilder authenticationManagerBuilder;
     SecurityUtil securityUtil;
     UserService userService;
+    PasswordEncoder passwordEncoder;
 
     @NonFinal
     @Value("${jwt.refresh-token-validity-in-seconds}")
@@ -192,4 +197,29 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, deleteCookies.toString())
                 .body(null);
     }
+
+    @PostMapping("/register")
+    @ApiMessage("Register a new user")
+    public ResponseEntity<UserResponse> register(
+            @Valid @RequestBody UserRequest userRequest
+    ) throws IdInvalidException {
+        boolean isEmailExist =
+                this.userService.existsByEmail(userRequest.getEmail());
+        if (isEmailExist) {
+            throw new IdInvalidException(
+                    "Email " +
+                            userRequest.getEmail() +
+                            "đã tồn tại, vui lòng sử dụng email khác."
+            );
+        }
+
+        String hashPassword =
+                this.passwordEncoder.encode(userRequest.getPassword());
+        userRequest.setPassword(hashPassword);
+        UserResponse newUser = this.userService.createUser(userRequest);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(newUser);
+    }
+
 }

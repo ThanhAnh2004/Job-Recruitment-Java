@@ -13,4 +13,5 @@ public interface PermissionService {
     ResultPagination fetchAllPermission(Specification<Permission> spec, Pageable pageable);
     boolean checkExistById(long id);
     void deletePermission(long id);
+    boolean isPermissionExist(Permission permission);
 }

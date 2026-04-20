@@ -37,6 +37,19 @@ public class RoleController {
         return ResponseEntity.ok().body(this.roleService.updateRole(role));
     }
 
+    @GetMapping("{id}")
+    @ApiMessage("Fetch role by id")
+    public ResponseEntity<RoleResponse> fetchRoleById(@PathVariable("id") long id) throws IdInvalidException {
+        // Check exists
+        boolean existRole = this.roleService.checkExitsById(id);
+
+        if (!existRole) {
+            throw new IdInvalidException("Not found role with id "+ id);
+        }
+
+        return ResponseEntity.ok().body(this.roleService.fetchRoleById(id));
+    }
+
     @DeleteMapping("{id}")
     @ApiMessage("Delete a role")
     public ResponseEntity<Void> deleteRole (@PathVariable("id") long id) throws IdInvalidException {

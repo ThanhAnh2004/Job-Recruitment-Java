@@ -87,6 +87,14 @@ public class PermissionServiceImpl implements PermissionService {
 
     }
 
+    @Override
+    public boolean isPermissionExist(Permission permission) {
+        return permissionRepository.existsByModuleAndApiPathAndMethod(
+                permission.getModule(),
+                permission.getApiPath(),
+                permission.getMethod());
+    }
+
     private PermissionResponse mapperPermissionToPermissionResponse(Permission permission){
         return PermissionResponse.builder()
                 .id(permission.getId())

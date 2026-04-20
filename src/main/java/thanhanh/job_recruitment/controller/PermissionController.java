@@ -38,6 +38,11 @@ public class PermissionController {
             throw new IdInvalidException("Not found permission with id "+ permission.getId());
         }
 
+        // check exist by module, apiPath and method
+        if (this.permissionService.isPermissionExist(permission)) {
+            throw new IdInvalidException("Permission has existed.");
+        }
+
         return ResponseEntity.ok().body(this.permissionService.updatePermission(permission));
     }
 
