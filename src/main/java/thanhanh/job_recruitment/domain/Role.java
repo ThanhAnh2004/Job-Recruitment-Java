@@ -1,5 +1,6 @@
 package thanhanh.job_recruitment.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,6 +41,10 @@ public class Role {
 
     @Column(name = "updatedBy")
     private String updatedBy;
+
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "role")
+    @JsonIgnore
+    List<User> users;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = "roles")

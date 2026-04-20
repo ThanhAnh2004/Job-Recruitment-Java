@@ -41,9 +41,14 @@ public class SecurityUtil {
         this.jwtEncoder = jwtEncoder;
     }
 
-    public String createAccessToken (String email, UserLoginResponse user) {
+    public String createAccessToken (String email, LoginResponse loginResponse) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
+
+        LoginResponse.UserInsideToken userInsideToken = new LoginResponse.UserInsideToken();
+        userInsideToken.setId(loginResponse.getUser().getId());
+        userInsideToken.setName(loginResponse.getUser().getName());
+        userInsideToken.setEmail(loginResponse.getUser().getEmail());
 
         JwsHeader header = JwsHeader.with(JWT_ALGORITHM).build();
 
@@ -51,23 +56,28 @@ public class SecurityUtil {
                 .subject(email)
                 .issuedAt(now)
                 .expiresAt(validity)
-                .claim("User", user)
+                .claim("User", userInsideToken)
                 .build();
 
         return this.jwtEncoder.encode(JwtEncoderParameters.from(header, payload)).getTokenValue();
     }
 
-    public String createRefreshToken (String email) {
+    public String createRefreshToken (String email, LoginResponse loginResponse) {
         Instant now = Instant.now();
         Instant validity = Instant.now().plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
+
+        LoginResponse.UserInsideToken userInsideToken = new LoginResponse.UserInsideToken();
+        userInsideToken.setId(loginResponse.getUser().getId());
+        userInsideToken.setName(loginResponse.getUser().getName());
+        userInsideToken.setEmail(loginResponse.getUser().getEmail());
 
         JwsHeader header = JwsHeader.with(JWT_ALGORITHM).build();
 
         JwtClaimsSet payload = JwtClaimsSet.builder()
                 .subject(email)
-                .issuedAt(Instant.now())
+                .issuedAt(now)
                 .expiresAt(validity)
-                .claim("Email", email)
+                .claim("User", userInsideToken)
                 .build();
 
         return this.jwtEncoder.encode(JwtEncoderParameters.from(header,payload)).getTokenValue();

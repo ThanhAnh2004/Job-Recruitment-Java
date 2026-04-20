@@ -16,4 +16,5 @@ public interface ResumeService {
     void deleteById(long id);
     boolean checkExistById(long id);
     ResultPagination fetchAllResume(Specification<Resume> spec, Pageable pageable);
+    ResultPagination fetchResumeByUser(Pageable pageable);
 }

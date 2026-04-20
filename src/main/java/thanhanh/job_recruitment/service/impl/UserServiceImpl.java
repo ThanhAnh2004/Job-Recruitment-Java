@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import thanhanh.job_recruitment.domain.Company;
+import thanhanh.job_recruitment.domain.Role;
 import thanhanh.job_recruitment.domain.User;
 import thanhanh.job_recruitment.dto.request.User.UserRequest;
 import thanhanh.job_recruitment.dto.response.ApiResponse.Meta;
@@ -16,6 +17,7 @@ import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
 import thanhanh.job_recruitment.dto.response.Company.CompanyResponse;
 import thanhanh.job_recruitment.dto.response.User.UserResponse;
 import thanhanh.job_recruitment.repository.CompanyRepository;
+import thanhanh.job_recruitment.repository.RoleRepository;
 import thanhanh.job_recruitment.repository.UserRepository;
 import thanhanh.job_recruitment.service.UserService;
 
@@ -28,16 +30,21 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     CompanyRepository companyRepository;
+    RoleRepository roleRepository;
     PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponse createUser(UserRequest user) {
-
-        boolean checkExists = this.existsByEmail(user.getEmail());
+        // Check company
         Optional<Company> companyOptional = this.companyRepository.findById(user.getCompany().getId());
 
         Company company = companyOptional.isPresent()
                 ? companyOptional.get() : null;
+
+        // Check role
+        Optional<Role> roleOptional = this.roleRepository.findById(user.getRole().getId());
+
+        Role role = roleOptional.isPresent() ? roleOptional.get() : null;
 
         String hashPassword = passwordEncoder.encode(user.getPassword());
 
@@ -48,6 +55,7 @@ public class UserServiceImpl implements UserService {
                     .age(user.getAge())
                     .address(user.getAddress())
                     .gender(user.getGender())
+                    .role(role)
                     .company(company)
                     .build();
             this.userRepository.save(newUser);
@@ -102,6 +110,12 @@ public class UserServiceImpl implements UserService {
             currentUser.setCompany(company);
         }
 
+        Optional<Role> roleOptional = this.roleRepository.findById(user.getRole().getId());
+        if (roleOptional.isPresent()) {
+            Role role = roleOptional.get();
+            currentUser.setRole(role);
+        }
+
         currentUser.setName(user.getName());
         currentUser.setEmail(user.getEmail());
         currentUser.setPassword(user.getPassword());
@@ -152,6 +166,7 @@ public class UserServiceImpl implements UserService {
                 .age(user.getAge())
                 .gender(user.getGender())
                 .address(user.getAddress())
+                .role(user.getRole() != null ? this.mapperRoleToRoleUser(user.getRole()) : null)
                 .company(user.getCompany() != null ? this.mapperCompanyToCompanyResponse(user.getCompany()) : null)
                 .createdAt(user.getCreatedAt())
                 .createdBy(user.getCreatedBy())
@@ -171,6 +186,13 @@ public class UserServiceImpl implements UserService {
                 .createdAt(company.getCreatedAt())
                 .updatedBy(company.getUpdatedBy())
                 .updatedAt(company.getUpdatedAt())
+                .build();
+    }
+
+    private UserResponse.RoleUser mapperRoleToRoleUser(Role role) {
+        return UserResponse.RoleUser.builder()
+                .id(role.getId())
+                .name(role.getName())
                 .build();
     }
 }

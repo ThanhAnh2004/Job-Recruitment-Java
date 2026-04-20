@@ -65,6 +65,9 @@ public class User {
     @JsonIgnore
     List<Resume> resumes;
 
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    Role role;
 
     @PrePersist
     public void handleCreateUser() {

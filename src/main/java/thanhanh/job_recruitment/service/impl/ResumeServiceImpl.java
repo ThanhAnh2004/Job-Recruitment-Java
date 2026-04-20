@@ -1,7 +1,13 @@
 package thanhanh.job_recruitment.service.impl;
 
 
+import com.turkraft.springfilter.builder.FilterBuilder;
+import com.turkraft.springfilter.converter.FilterSpecification;
+import com.turkraft.springfilter.converter.FilterSpecificationConverter;
+import com.turkraft.springfilter.parser.FilterParser;
+import com.turkraft.springfilter.parser.node.FilterNode;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,17 +24,33 @@ import thanhanh.job_recruitment.repository.JobRepository;
 import thanhanh.job_recruitment.repository.ResumeRepository;
 import thanhanh.job_recruitment.repository.UserRepository;
 import thanhanh.job_recruitment.service.ResumeService;
+import thanhanh.job_recruitment.util.SecurityUtil;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class ResumeServiceImpl implements ResumeService {
+
+    @Autowired
+    FilterBuilder fb;
+
+    @Autowired
+    private FilterParser filterParser;
+
+    @Autowired
+    private FilterSpecificationConverter filterSpecificationConverter;
+
 
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
+
+    public ResumeServiceImpl(ResumeRepository resumeRepository, UserRepository userRepository, JobRepository jobRepository) {
+        this.resumeRepository = resumeRepository;
+        this.userRepository = userRepository;
+        this.jobRepository = jobRepository;
+    }
 
     @Override
     public boolean checkResumeExistByUserAndJob(Resume resume) {
@@ -127,5 +149,41 @@ public class ResumeServiceImpl implements ResumeService {
                 .meta(meta)
                 .result(pageResumeResponse)
                 .build();
+    }
+
+    @Override
+    public ResultPagination fetchResumeByUser(Pageable pageable) {
+        // query builder
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        FilterNode node = filterParser.parse("email='" + email + "'");
+        FilterSpecification<Resume> spec = filterSpecificationConverter.convert(
+                node
+        );
+        Page<Resume> pageResume = this.resumeRepository.findAll(spec, pageable);
+
+        ResultPagination rs = new ResultPagination();
+        Meta mt = new Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+
+        mt.setPages(pageResume.getTotalPages());
+        mt.setTotal(pageResume.getTotalElements());
+
+        rs.setMeta(mt);
+
+        // remove sensitive data
+        List<FetchResumeResponse> listResume = pageResume
+                .getContent()
+                .stream()
+                .map(item -> this.fetchById(item.getId()))
+                .toList();
+
+        rs.setResult(listResume);
+
+        return rs;
+
     }
 }

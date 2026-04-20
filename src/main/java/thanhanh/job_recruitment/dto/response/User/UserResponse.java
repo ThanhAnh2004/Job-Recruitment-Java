@@ -1,11 +1,10 @@
 package thanhanh.job_recruitment.dto.response.User;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+import thanhanh.job_recruitment.domain.Role;
 import thanhanh.job_recruitment.dto.response.Company.CompanyResponse;
 import thanhanh.job_recruitment.util.constant.GenderEnum;
 
@@ -23,9 +22,22 @@ public class UserResponse {
     int age;
     GenderEnum gender;
     String address;
+    @JsonIgnoreProperties(value = "users")
+    RoleUser role;
     CompanyResponse company;
     Instant createdAt;
     String createdBy;
     Instant updatedAt;
     String updatedBy;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class RoleUser {
+        private long id;
+        private String name;
+    }
+
 }

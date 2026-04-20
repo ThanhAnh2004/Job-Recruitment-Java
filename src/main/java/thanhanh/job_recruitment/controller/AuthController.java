@@ -61,13 +61,19 @@ public class AuthController {
                     .id(currentUser.getId())
                     .email(currentUser.getEmail())
                     .name(currentUser.getName())
+                    .role(currentUser.getRole())
                     .build();
         }
 
+        LoginResponse response = new LoginResponse();
+        response.setUser(user);
+
         // set user information log into context (will maybe use)
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String accessToken = this.securityUtil.createAccessToken(authentication.getName(), user);
-        String refreshToken = this.securityUtil.createRefreshToken(loginRequest.getUserName());
+        String accessToken = this.securityUtil.createAccessToken(authentication.getName(), response);
+        String refreshToken = this.securityUtil.createRefreshToken(loginRequest.getUserName(), response);
+
+        response.setAccessToken(accessToken);
 
         // Update refresh token into database
         this.userService.updateUserToken(refreshToken, loginRequest.getUserName());
@@ -80,10 +86,6 @@ public class AuthController {
                 .maxAge(refreshTokenExpiration)
                 .build();
 
-        LoginResponse response = LoginResponse.builder()
-                .accessToken(accessToken)
-                .user(user)
-                .build();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, resCookies.toString())
@@ -105,6 +107,7 @@ public class AuthController {
                     .id(currentUser.getId())
                     .email(currentUser.getEmail())
                     .name(currentUser.getName())
+                    .role(currentUser.getRole())
                     .build();
         }
 
@@ -137,11 +140,17 @@ public class AuthController {
                     .id(currentUser.getId())
                     .email(currentUser.getEmail())
                     .name(currentUser.getName())
+                    .role(currentUser.getRole())
                     .build();
 
+            LoginResponse response = new LoginResponse();
+            response.setUser(user);
+
         // set user information log into context (will maybe use)
-        String accessToken = this.securityUtil.createAccessToken(email, user);
-        String newRefreshToken = this.securityUtil.createRefreshToken(email);
+        String accessToken = this.securityUtil.createAccessToken(email, response);
+        String newRefreshToken = this.securityUtil.createRefreshToken(email, response);
+
+        response.setAccessToken(accessToken);
 
         // Update refresh token into database
         this.userService.updateUserToken(newRefreshToken, email);
@@ -154,10 +163,6 @@ public class AuthController {
                 .maxAge(refreshTokenExpiration)
                 .build();
 
-        LoginResponse response = LoginResponse.builder()
-                .accessToken(accessToken)
-                .user(user)
-                .build();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, resCookies.toString())

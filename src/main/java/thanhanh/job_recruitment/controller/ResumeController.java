@@ -77,7 +77,7 @@ public class ResumeController {
         // check resume exist by id
         boolean checkExists = this.resumeService.checkExistById(id);
         if (!checkExists) {
-            throw new IdInvalidException("Mot found resume with id " + id);
+            throw new IdInvalidException("Not found resume with id " + id);
         }
 
         return ResponseEntity
@@ -93,4 +93,15 @@ public class ResumeController {
     ) {
         return ResponseEntity.ok().body(this.resumeService.fetchAllResume(spec, pageable));
     }
+
+    @PostMapping("/by-user")
+    @ApiMessage("Get list resumes by user")
+    public ResponseEntity<ResultPagination> fetchResumeByUser(
+            Pageable pageable
+    ) {
+        return ResponseEntity
+                .ok()
+                .body(this.resumeService.fetchResumeByUser(pageable));
+    }
+
 }
