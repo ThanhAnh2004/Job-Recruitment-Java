@@ -1,6 +1,8 @@
 package thanhanh.job_recruitment.controller;
 
 import com.turkraft.springfilter.boot.Filter;
+import com.turkraft.springfilter.builder.FilterBuilder;
+import com.turkraft.springfilter.converter.FilterSpecificationConverter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -8,15 +10,22 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import thanhanh.job_recruitment.domain.Company;
+import thanhanh.job_recruitment.domain.Job;
 import thanhanh.job_recruitment.domain.Resume;
+import thanhanh.job_recruitment.domain.User;
 import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
 import thanhanh.job_recruitment.dto.response.Resume.CreateResumeResponse;
 import thanhanh.job_recruitment.dto.response.Resume.FetchResumeResponse;
 import thanhanh.job_recruitment.dto.response.Resume.UpdateResumeResponse;
 import thanhanh.job_recruitment.service.ResumeService;
 import thanhanh.job_recruitment.service.UserService;
+import thanhanh.job_recruitment.util.SecurityUtil;
 import thanhanh.job_recruitment.util.annotation.ApiMessage;
 import thanhanh.job_recruitment.util.exception.IdInvalidException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RestController
@@ -25,6 +34,9 @@ import thanhanh.job_recruitment.util.exception.IdInvalidException;
 public class ResumeController {
     private final ResumeService resumeService;
     private final UserService userService;
+    private final FilterBuilder filterBuilder;
+    private final FilterSpecificationConverter filterSpecificationConverter;
+
 
     @PostMapping("/resumes")
     @ApiMessage("Create a resume")
@@ -91,7 +103,32 @@ public class ResumeController {
             @Filter Specification<Resume> spec,
             Pageable pageable
     ) {
-        return ResponseEntity.ok().body(this.resumeService.fetchAllResume(spec, pageable));
+
+        List<Long> listJobId = new ArrayList<>();
+
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get() : null;
+
+        User currentUer = this.userService.fetchUserByEmail(email);
+
+        if(currentUer != null) {
+            Company userCompany = currentUer.getCompany();
+            if (userCompany != null) {
+                List<Job> companyJob = userCompany.getJobs();
+                if (companyJob != null && !companyJob.isEmpty()) {
+                    listJobId = companyJob.stream().map(x -> x.getId()).toList();
+                }
+            }
+        }
+
+        Specification<Resume> jobInSpec = filterSpecificationConverter.convert(
+                filterBuilder.field("job").in(filterBuilder.input(listJobId)).get()
+        );
+
+        Specification<Resume> finalSpec = jobInSpec.and(spec);
+
+
+        return ResponseEntity.ok().body(this.resumeService.fetchAllResume(finalSpec, pageable));
     }
 
     @PostMapping("/by-user")
