@@ -63,7 +63,7 @@ public class SkillController {
         return ResponseEntity.ok().body(this.skillService.fetchSkillById(id));
     }
 
-    @GetMapping
+    @GetMapping()
     @ApiMessage("Fetch all skill")
     public ResponseEntity<ResultPagination> fetchAllSkills (
             @Filter Specification<Skill> spec,

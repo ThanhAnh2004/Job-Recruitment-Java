@@ -87,6 +87,17 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
 
+    @Override
+    public CompanyResponse fetchCompanyById(long id) {
+        Company currentCompany = this.companyRepository.findById(id).get();
+        return this.mapperCompanyToCompanyResponse(currentCompany);
+    }
+
+    @Override
+    public boolean checkExistById(long id) {
+        return this.companyRepository.existsById(id);
+    }
+
 
     private CompanyResponse mapperCompanyToCompanyResponse (Company company) {
         return CompanyResponse.builder()

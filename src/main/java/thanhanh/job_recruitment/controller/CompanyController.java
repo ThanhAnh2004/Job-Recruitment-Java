@@ -14,6 +14,7 @@ import thanhanh.job_recruitment.dto.response.Company.CompanyResponse;
 import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
 import thanhanh.job_recruitment.service.CompanyService;
 import thanhanh.job_recruitment.util.annotation.ApiMessage;
+import thanhanh.job_recruitment.util.exception.IdInvalidException;
 
 
 @RestController
@@ -27,6 +28,18 @@ public class CompanyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.companyService.createCompany(companyRequest));
     }
 
+    @GetMapping("{id}")
+    @ApiMessage("Fetch a company by id")
+    public ResponseEntity<CompanyResponse> fetchCompanyById(@PathVariable("id") long id) throws IdInvalidException {
+        boolean checkExist = this.companyService.checkExistById(id);
+
+        if (!checkExist) {
+            throw new IdInvalidException("Not found company with id " + id);
+        }
+
+        return ResponseEntity.ok().body(this.companyService.fetchCompanyById(id));
+    }
+
     @GetMapping()
     @ApiMessage("Fetch all company")
     public  ResponseEntity<ResultPagination> fetchAllCompany (
@@ -36,7 +49,7 @@ public class CompanyController {
         return ResponseEntity.ok().body(this.companyService.fetchAllCompany(spec, pageable));
     }
 
-    @PutMapping("")
+    @PutMapping()
     ResponseEntity<CompanyResponse> updateCompany(@RequestBody Company company) {
         return ResponseEntity.ok().body(this.companyService.updateCompany(company));
     }

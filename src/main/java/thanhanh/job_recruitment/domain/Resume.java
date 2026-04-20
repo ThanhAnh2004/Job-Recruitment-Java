@@ -2,7 +2,6 @@ package thanhanh.job_recruitment.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
 import lombok.Getter;
 import lombok.Setter;
 import thanhanh.job_recruitment.util.SecurityUtil;

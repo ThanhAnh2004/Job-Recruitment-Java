@@ -33,7 +33,7 @@ public class FileController {
         this.fileService = fileService;
     }
 
-    @PostMapping
+    @PostMapping()
     @ApiMessage("Upload a single file")
     public ResponseEntity<UploadFileResponse> upload(
             @RequestParam(value = "file", required = false) MultipartFile file,
@@ -73,7 +73,7 @@ public class FileController {
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping
+    @GetMapping()
     @ApiMessage("Download a file")
     public ResponseEntity<Resource> download(
             @RequestParam(name = "fileName", required = false) String fileName,

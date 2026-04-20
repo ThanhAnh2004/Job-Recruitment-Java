@@ -12,4 +12,6 @@ public interface CompanyService {
     ResultPagination fetchAllCompany (Specification<Company> spec, Pageable pageable);
     CompanyResponse updateCompany (Company company);
     void deleteCompany (long id);
+    CompanyResponse fetchCompanyById (long id);
+    boolean checkExistById (long id);
 }
