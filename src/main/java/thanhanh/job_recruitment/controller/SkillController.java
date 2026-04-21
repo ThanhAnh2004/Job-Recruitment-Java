@@ -72,5 +72,18 @@ public class SkillController {
         return ResponseEntity.ok().body(this.skillService.fetchAllSkill(spec, pageable));
     }
 
+    @DeleteMapping("/{id}")
+    @ApiMessage("Delete a skill")
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) throws IdInvalidException {
+        // check id
+        boolean existSkill = this.skillService.checkExistsSkillById(id);
+        if (!existSkill) {
+            throw new IdInvalidException("Skill id = " + id + " not existed");
+        }
+        this.skillService.deleteSkill(id);
+        return ResponseEntity.ok().body(null);
+    }
+
+
 
 }

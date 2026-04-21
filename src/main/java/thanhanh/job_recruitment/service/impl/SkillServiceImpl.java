@@ -80,6 +80,21 @@ public class SkillServiceImpl implements SkillService {
 
     }
 
+    @Override
+    public void deleteSkill(long id) {
+        Skill skill= this.skillRepository.findById(id).get();
+
+        // Check job
+        skill.getJobs().forEach(x -> x.getSkills().remove(skill));
+
+        // Check subscriber
+        skill.getSubscribers().forEach(x -> x.getSkills().remove(skill));
+
+        skillRepository.delete(skill);
+
+
+    }
+
     private SkillResponse mapperSkillToSkillResponse (Skill skill) {
         return SkillResponse.builder()
                 .id(skill.getId())

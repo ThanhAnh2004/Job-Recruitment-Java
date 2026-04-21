@@ -13,6 +13,7 @@ import thanhanh.job_recruitment.domain.User;
 import thanhanh.job_recruitment.service.UserService;
 import thanhanh.job_recruitment.util.SecurityUtil;
 import thanhanh.job_recruitment.util.exception.IdInvalidException;
+import thanhanh.job_recruitment.util.exception.PermissionException;
 
 
 public class PermissionInterceptor implements HandlerInterceptor {
@@ -51,11 +52,11 @@ public class PermissionInterceptor implements HandlerInterceptor {
                             -> item.getApiPath().equals(path) && item.getMethod().equals(httpMethod));
 
                     if (!isAllow) {
-                        throw new IdInvalidException("Bạn không có quyền truy cập Endpoint này!");
+                        throw new PermissionException("Bạn không có quyền truy cập Endpoint này!");
                     }
                 }
                 else {
-                    throw new IdInvalidException("Bạn không có quyền truy cập Endpoint này!");
+                    throw new PermissionException("Bạn không có quyền truy cập Endpoint này!");
                 }
             }
         }

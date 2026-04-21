@@ -15,4 +15,5 @@ public interface SkillService {
     SkillResponse updateSkill(UpdateSkillRequest request);
     SkillResponse fetchSkillById (long id);
     ResultPagination fetchAllSkill (Specification<Skill> spec, Pageable pageable);
+    void deleteSkill(long id);
 }
