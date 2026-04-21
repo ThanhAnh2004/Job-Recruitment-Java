@@ -79,4 +79,5 @@ public class EmailService {
             String content = templateEngine.process(templateName, context);
             this.sendEmailSync(to, subject, content, false, true);
         }
+
 }

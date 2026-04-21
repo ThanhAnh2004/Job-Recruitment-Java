@@ -7,4 +7,5 @@ public interface SubscriberService {
     Subscriber createSubscriber(Subscriber subscriber);
     Subscriber updateSubscriber(Subscriber subsDB, Subscriber subsRequest);
     Subscriber findById(long id);
+    void sendSubscribersEmailJobs();
 }

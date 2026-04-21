@@ -6,25 +6,27 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import thanhanh.job_recruitment.service.EmailService;
+import thanhanh.job_recruitment.service.SubscriberService;
 import thanhanh.job_recruitment.util.annotation.ApiMessage;
 
 @RestController
 @RequestMapping("/api/v1/email")
+@RequiredArgsConstructor
 public class EmailController {
 
     private final EmailService emailService;
+    private final SubscriberService subscriberService;
 
-    public EmailController(EmailService emailService) {
-        this.emailService = emailService;
-    }
 
     @GetMapping
     @ApiMessage("Send simple email")
     public String sendSimpleEmail() {
         //return this.emailService.sendSimpleEmail();
 
-        this.emailService.sendEmailFromTemplateSync("thanhanhdz2004@gmail.com","test send email",
-                "test","thanhanh",null);
+//       this.emailService.sendEmailFromTemplateSync("thanhanh818757@gmail.com","test send email",
+//              "job","thanhanh",null);
+
+        this.subscriberService.sendSubscribersEmailJobs();
 
         return "ok";
     }
