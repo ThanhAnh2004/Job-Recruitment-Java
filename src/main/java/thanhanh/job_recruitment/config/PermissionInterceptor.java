@@ -12,7 +12,6 @@ import thanhanh.job_recruitment.domain.Role;
 import thanhanh.job_recruitment.domain.User;
 import thanhanh.job_recruitment.service.UserService;
 import thanhanh.job_recruitment.util.SecurityUtil;
-import thanhanh.job_recruitment.util.exception.IdInvalidException;
 import thanhanh.job_recruitment.util.exception.PermissionException;
 
 

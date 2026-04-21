@@ -1,4 +1,4 @@
-package thanhanh.job_recruitment.service.impl;
+package thanhanh.job_recruitment.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;

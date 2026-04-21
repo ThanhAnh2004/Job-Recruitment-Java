@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import thanhanh.job_recruitment.dto.response.File.UploadFileResponse;
-import thanhanh.job_recruitment.service.impl.FileService;
+import thanhanh.job_recruitment.service.FileService;
 import thanhanh.job_recruitment.util.annotation.ApiMessage;
 import thanhanh.job_recruitment.util.exception.StorageException;
 
