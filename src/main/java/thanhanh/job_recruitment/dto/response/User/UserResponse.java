@@ -24,7 +24,7 @@ public class UserResponse {
     String address;
     @JsonIgnoreProperties(value = "users")
     RoleUser role;
-    CompanyResponse company;
+    CompanyUser company;
     Instant createdAt;
     String createdBy;
     Instant updatedAt;
@@ -36,6 +36,16 @@ public class UserResponse {
     @NoArgsConstructor
     @Builder
     public static class RoleUser {
+        private long id;
+        private String name;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @Getter
+    @Setter
+    public static class CompanyUser {
         private long id;
         private String name;
     }

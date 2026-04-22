@@ -1,12 +1,17 @@
 package thanhanh.job_recruitment.service.impl;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import thanhanh.job_recruitment.domain.Company;
 import thanhanh.job_recruitment.domain.Job;
 import thanhanh.job_recruitment.domain.Skill;
 import thanhanh.job_recruitment.dto.request.Job.CreateJobRequest;
 import thanhanh.job_recruitment.dto.request.Job.UpdateJobRequest;
+import thanhanh.job_recruitment.dto.response.ApiResponse.Meta;
+import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
 import thanhanh.job_recruitment.dto.response.Job.JobResponse;
 import thanhanh.job_recruitment.repository.CompanyRepository;
 import thanhanh.job_recruitment.repository.JobRepository;
@@ -97,6 +102,26 @@ public class JobServiceImpl implements JobService {
        Job  currentJob = this.jobRepository.findById(id).get();
 
         return this.mapperJobToJobResponse(currentJob);
+    }
+
+    @Override
+    public ResultPagination fetchAllJob(Specification<Job> spec, Pageable pageable) {
+        Page<Job> pageJob = this.jobRepository.findAll(spec, pageable);
+
+        List<JobResponse> pageJobResponse = pageJob.getContent().stream().map(job ->
+                this.mapperJobToJobResponse(job)).toList();
+
+        Meta meta = Meta.builder()
+                .page(pageable.getPageNumber() + 1)
+                .pageSize(pageable.getPageSize())
+                .pages(pageJob.getTotalPages())
+                .total(pageJob.getTotalElements())
+                .build();
+
+        return ResultPagination.builder()
+                .meta(meta)
+                .result(pageJobResponse)
+                .build();
     }
 
     @Override

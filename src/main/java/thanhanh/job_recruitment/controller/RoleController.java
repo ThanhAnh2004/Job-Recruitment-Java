@@ -1,12 +1,16 @@
 package thanhanh.job_recruitment.controller;
 
+import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import thanhanh.job_recruitment.domain.Role;
 import thanhanh.job_recruitment.dto.request.Role.CreateRoleRequest;
+import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
 import thanhanh.job_recruitment.dto.response.Role.RoleResponse;
 import thanhanh.job_recruitment.service.RoleService;
 import thanhanh.job_recruitment.util.annotation.ApiMessage;
@@ -48,6 +52,15 @@ public class RoleController {
         }
 
         return ResponseEntity.ok().body(this.roleService.fetchRoleById(id));
+    }
+
+    @GetMapping
+    @ApiMessage("Fetch all role")
+    public ResponseEntity<ResultPagination> fetchAllRole(
+            @Filter Specification<Role> spec,
+            Pageable pageable
+            ) {
+        return ResponseEntity.ok().body(this.roleService.fetchAllRole(spec, pageable));
     }
 
     @DeleteMapping("{id}")

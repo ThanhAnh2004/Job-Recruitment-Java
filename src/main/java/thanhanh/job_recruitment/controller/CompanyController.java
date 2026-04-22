@@ -23,7 +23,7 @@ import thanhanh.job_recruitment.util.exception.IdInvalidException;
 public class CompanyController {
     private final CompanyService companyService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<CompanyResponse> createCompany (@Valid @RequestBody CompanyRequest companyRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.companyService.createCompany(companyRequest));
     }
@@ -49,7 +49,7 @@ public class CompanyController {
         return ResponseEntity.ok().body(this.companyService.fetchAllCompany(spec, pageable));
     }
 
-    @PutMapping()
+    @PutMapping
     ResponseEntity<CompanyResponse> updateCompany(@RequestBody Company company) {
         return ResponseEntity.ok().body(this.companyService.updateCompany(company));
     }

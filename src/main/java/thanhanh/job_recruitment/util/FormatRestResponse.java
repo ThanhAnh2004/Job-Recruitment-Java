@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
@@ -33,10 +34,15 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
                 ((ServletServerHttpResponse) response).getServletResponse();
         int status = servletResponse.getStatus();
 
+
         if (body instanceof String || body instanceof Resource) {
             return body;
         }
 
+        String path = request.getURI().getPath();
+        if (path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui")) {
+            return body;
+        }
 
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(status);

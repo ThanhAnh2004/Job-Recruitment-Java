@@ -19,11 +19,9 @@ public class Resume {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank(message = "email không được để trống")
     @Column(name = "email")
     private String email;
 
-    @NotBlank(message = "url không được để trống (upload cv chưa thành công)")
     @Column(name = "url")
     private String url;
 

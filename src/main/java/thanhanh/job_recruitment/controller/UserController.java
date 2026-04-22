@@ -27,7 +27,7 @@ public class UserController {
 
     UserService userService;
 
-    @PostMapping("/create")
+    @PostMapping
     @ApiMessage("Create a new user")
     public ResponseEntity<UserResponse> createUser (@Valid @RequestBody UserRequest user) throws IdInvalidException {
         // Check email exists
@@ -62,7 +62,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
-    @GetMapping("/get-all")
+    @GetMapping
     @ApiMessage("Fetch all user")
     public ResponseEntity<ResultPagination> fetchAllUser (
             @Filter Specification<User> spec,
@@ -71,7 +71,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(this.userService.fetchAllUser(spec, pageable)) ;
     }
 
-    @PutMapping("/update")
+    @PutMapping
     @ApiMessage("Update a user")
     public ResponseEntity<UserResponse> updateUser (@RequestBody User user) throws IdInvalidException {
 

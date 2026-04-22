@@ -16,6 +16,22 @@ public class UserRequest {
     int age;
     GenderEnum gender;
     String address;
-    Company company;
-    Role role;
+    RoleUser role;
+    CompanyUser company;
+
+    @Getter
+    @Setter
+    public static class RoleUser {
+        private long id;
+        private String name;
+    }
+
+    @Getter
+    @Setter
+    public static class CompanyUser {
+        private long id;
+        private String name;
+    }
+
+
 }

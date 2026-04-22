@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import thanhanh.job_recruitment.domain.Job;
 import thanhanh.job_recruitment.domain.Resume;
 import thanhanh.job_recruitment.domain.User;
+import thanhanh.job_recruitment.dto.request.Resume.UpdateResumeRequest;
 import thanhanh.job_recruitment.dto.response.ApiResponse.Meta;
 import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
 import thanhanh.job_recruitment.dto.response.Resume.CreateResumeResponse;
@@ -82,12 +83,16 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public UpdateResumeResponse update(Resume resume) {
-        resume = this.resumeRepository.save(resume);
-        UpdateResumeResponse res = new UpdateResumeResponse();
-        res.setUpdatedAt(resume.getUpdatedAt());
-        res.setUpdatedBy(resume.getUpdatedBy());
-        return res;
+    public UpdateResumeResponse update(UpdateResumeRequest resume) {
+        Resume currentResume = this.resumeRepository.findById(resume.getId()).get();
+
+        currentResume.setStatus(resume.getStatus());
+        this.resumeRepository.save(currentResume);
+
+        UpdateResumeResponse response = new UpdateResumeResponse();
+        response.setUpdatedAt(currentResume.getUpdatedAt());
+        response.setUpdatedBy(currentResume.getUpdatedBy());
+        return response;
     }
 
     @Override
@@ -136,7 +141,7 @@ public class ResumeServiceImpl implements ResumeService {
         Page<Resume> pageResume = this.resumeRepository.findAll(spec, pageable);
 
         Meta meta = Meta.builder()
-                .page(pageable.getPageNumber())
+                .page(pageable.getPageNumber() + 1)
                 .pageSize(pageable.getPageSize())
                 .pages(pageResume.getTotalPages())
                 .total(pageResume.getTotalElements())

@@ -1,10 +1,15 @@
 package thanhanh.job_recruitment.service.impl;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import thanhanh.job_recruitment.domain.Permission;
 import thanhanh.job_recruitment.domain.Role;
 import thanhanh.job_recruitment.dto.request.Role.CreateRoleRequest;
+import thanhanh.job_recruitment.dto.response.ApiResponse.Meta;
+import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
 import thanhanh.job_recruitment.dto.response.Role.RoleResponse;
 import thanhanh.job_recruitment.repository.PermissionRepository;
 import thanhanh.job_recruitment.repository.RoleRepository;
@@ -64,6 +69,26 @@ public class RoleServiceImpl implements RoleService {
 
 
         return this.mapperRoleToRoleResponse(currentRole);
+    }
+
+    @Override
+    public ResultPagination fetchAllRole(Specification<Role> spec, Pageable pageable) {
+        Page<Role> pageRole = this.roleRepository.findAll(spec, pageable);
+
+        List<RoleResponse> listRoleResponse = pageRole.getContent().stream().map(role ->
+                this.mapperRoleToRoleResponse(role)).toList();
+
+        Meta meta = Meta.builder()
+                .page(pageable.getPageNumber()  + 1)
+                .pageSize(pageable.getPageSize())
+                .pages(pageRole.getTotalPages())
+                .total(pageRole.getTotalElements())
+                .build();
+
+        return ResultPagination.builder()
+                .meta(meta)
+                .result(listRoleResponse)
+                .build();
     }
 
     @Override

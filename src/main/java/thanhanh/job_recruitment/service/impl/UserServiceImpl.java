@@ -35,28 +35,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createUser(UserRequest user) {
-        // Check company
-        Optional<Company> companyOptional = this.companyRepository.findById(user.getCompany().getId());
 
-        Company company = companyOptional.isPresent()
-                ? companyOptional.get() : null;
+        User newUser = new User();
+        // Check company
+        if(user.getCompany() != null) {
+            Optional<Company> companyOptional = this.companyRepository.findById(user.getCompany().getId());
+
+            Company company = companyOptional.isPresent()
+                    ? companyOptional.get() : null;
+            newUser.setCompany(company);
+        }
 
         // Check role
-        Optional<Role> roleOptional = this.roleRepository.findById(user.getRole().getId());
+        if (user.getRole() != null) {
+            Optional<Role> roleOptional = this.roleRepository.findById(user.getRole().getId());
 
-        Role role = roleOptional.isPresent() ? roleOptional.get() : null;
+            Role role = roleOptional.isPresent() ? roleOptional.get() : null;
+            newUser.setRole(role);
+        }
 
         String hashPassword = passwordEncoder.encode(user.getPassword());
 
-            User newUser = User.builder()
+        newUser = User.builder()
                     .name(user.getName())
                     .email(user.getEmail())
                     .password(hashPassword)
                     .age(user.getAge())
                     .address(user.getAddress())
                     .gender(user.getGender())
-                    .role(role)
-                    .company(company)
                     .build();
             this.userRepository.save(newUser);
 
@@ -88,7 +94,7 @@ public class UserServiceImpl implements UserService {
         Meta meta = new Meta();
         ResultPagination resultPagination = new ResultPagination();
 
-       meta.setPage(pageable.getPageNumber());
+       meta.setPage(pageable.getPageNumber() + 1);
        meta.setPageSize(pageable.getPageSize());
        meta.setTotal(pageUserResponse.getTotalElements());
        meta.setPages(pageUserResponse.getTotalPages());
@@ -128,7 +134,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User fetchUserByEmail(String email) {
         Optional<User> userOptional = this.userRepository.findByEmail(email);
-        return userOptional.get();
+        return userOptional.orElse(null);
     }
 
     @Override
@@ -155,7 +161,7 @@ public class UserServiceImpl implements UserService {
     public User fetchUserByTokenAndEmail(String token, String email) {
         Optional<User> userOptional = this.userRepository.findByRefreshTokenAndEmail(token, email);
 
-        return userOptional.get();
+        return userOptional.orElse(null);
     }
 
     private UserResponse mapperUserToUserResponse (User user) {
@@ -167,7 +173,7 @@ public class UserServiceImpl implements UserService {
                 .gender(user.getGender())
                 .address(user.getAddress())
                 .role(user.getRole() != null ? this.mapperRoleToRoleUser(user.getRole()) : null)
-                .company(user.getCompany() != null ? this.mapperCompanyToCompanyResponse(user.getCompany()) : null)
+                .company(user.getCompany() != null ? this.mapperCompanyToCompanyUser(user.getCompany()) : null)
                 .createdAt(user.getCreatedAt())
                 .createdBy(user.getCreatedBy())
                 .updatedAt(user.getUpdatedAt())
@@ -175,17 +181,10 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    private CompanyResponse mapperCompanyToCompanyResponse (Company company) {
-        return CompanyResponse.builder()
+    private UserResponse.CompanyUser mapperCompanyToCompanyUser (Company company) {
+        return UserResponse.CompanyUser.builder()
                 .id(company.getId())
                 .name(company.getName())
-                .address(company.getAddress())
-                .description(company.getDescription())
-                .logo(company.getLogo())
-                .createBy(company.getCreatedBy())
-                .createdAt(company.getCreatedAt())
-                .updatedBy(company.getUpdatedBy())
-                .updatedAt(company.getUpdatedAt())
                 .build();
     }
 

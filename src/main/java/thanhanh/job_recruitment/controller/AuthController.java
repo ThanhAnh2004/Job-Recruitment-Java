@@ -203,19 +203,11 @@ public class AuthController {
     public ResponseEntity<UserResponse> register(
             @Valid @RequestBody UserRequest userRequest
     ) throws IdInvalidException {
-        boolean isEmailExist =
-                this.userService.existsByEmail(userRequest.getEmail());
+        boolean isEmailExist = this.userService.existsByEmail(userRequest.getEmail());
         if (isEmailExist) {
-            throw new IdInvalidException(
-                    "Email " +
-                            userRequest.getEmail() +
-                            "đã tồn tại, vui lòng sử dụng email khác."
-            );
-        }
+            throw new IdInvalidException("Email " + userRequest.getEmail() +
+                    "đã tồn tại, vui lòng sử dụng email khác.");}
 
-        String hashPassword =
-                this.passwordEncoder.encode(userRequest.getPassword());
-        userRequest.setPassword(hashPassword);
         UserResponse newUser = this.userService.createUser(userRequest);
         return ResponseEntity
                 .status(HttpStatus.CREATED)

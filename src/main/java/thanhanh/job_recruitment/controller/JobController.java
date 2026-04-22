@@ -1,14 +1,19 @@
 package thanhanh.job_recruitment.controller;
 
+import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import thanhanh.job_recruitment.domain.Job;
 import thanhanh.job_recruitment.dto.request.Job.CreateJobRequest;
 import thanhanh.job_recruitment.dto.request.Job.UpdateJobRequest;
+import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
 import thanhanh.job_recruitment.dto.response.Job.JobResponse;
 import thanhanh.job_recruitment.service.JobService;
 import thanhanh.job_recruitment.util.annotation.ApiMessage;
@@ -21,14 +26,14 @@ import thanhanh.job_recruitment.util.exception.IdInvalidException;
 public class JobController {
     JobService jobService;
 
-    @PostMapping("/create")
+    @PostMapping
     @ApiMessage("Create a new job")
     public ResponseEntity<JobResponse> createJob(@RequestBody CreateJobRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.jobService.createJob(request));
     }
 
-    @PostMapping("/update")
-    @ApiMessage(("Update a job"))
+    @PutMapping
+    @ApiMessage("Update a job")
     public ResponseEntity<JobResponse> updateJob(@Valid @RequestBody UpdateJobRequest request) throws IdInvalidException {
         boolean checkExists = this.jobService.checkExistsById(request.getId());
 
@@ -49,6 +54,15 @@ public class JobController {
         }
 
         return ResponseEntity.ok().body(this.jobService.fetchJobById(id));
+    }
+
+    @GetMapping
+    @ApiMessage("Fetch all job")
+    public ResponseEntity<ResultPagination> fetchAllJob(
+            @Filter Specification<Job> spec,
+            Pageable pageable
+            ) {
+        return ResponseEntity.ok().body(this.jobService.fetchAllJob(spec,pageable));
     }
 
     @DeleteMapping("{id}")

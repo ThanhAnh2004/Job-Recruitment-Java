@@ -11,5 +11,4 @@ public class CreateResumeResponse {
     private long id;
     private Instant createdAt;
     private String createdBy;
-
 }

@@ -14,6 +14,8 @@ import thanhanh.job_recruitment.domain.Company;
 import thanhanh.job_recruitment.domain.Job;
 import thanhanh.job_recruitment.domain.Resume;
 import thanhanh.job_recruitment.domain.User;
+import thanhanh.job_recruitment.dto.request.Resume.CreateResumeRequest;
+import thanhanh.job_recruitment.dto.request.Resume.UpdateResumeRequest;
 import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
 import thanhanh.job_recruitment.dto.response.Resume.CreateResumeResponse;
 import thanhanh.job_recruitment.dto.response.Resume.FetchResumeResponse;
@@ -38,11 +40,24 @@ public class ResumeController {
     private final FilterSpecificationConverter filterSpecificationConverter;
 
 
-    @PostMapping("/resumes")
+    @PostMapping
     @ApiMessage("Create a resume")
     public ResponseEntity<CreateResumeResponse> create(
-            @Valid @RequestBody Resume resume
+            @Valid @RequestBody CreateResumeRequest request
     ) throws IdInvalidException {
+        Resume resume = new Resume();
+        resume.setEmail(request.getEmail());
+        resume.setUrl(request.getUrl());
+        resume.setStatus(request.getStatus());
+
+        User user = new User();
+        user.setId(request.getUserId());
+        resume.setUser(user);
+
+        Job job = new Job();
+        job.setId(request.getJobId());
+        resume.setJob(job);
+
         // check id exists
         boolean isIdExist = this.resumeService.checkResumeExistByUserAndJob(resume);
         if (!isIdExist) {
@@ -55,14 +70,14 @@ public class ResumeController {
                 .body(this.resumeService.create(resume));
     }
 
-    @PutMapping("/resumes")
+    @PutMapping
     @ApiMessage("Update a resume")
-    public ResponseEntity<UpdateResumeResponse> update(@RequestBody Resume resume)
+    public ResponseEntity<UpdateResumeResponse> update(@RequestBody UpdateResumeRequest resume)
             throws IdInvalidException {
         // check resume exist by id
         boolean checkExists = this.resumeService.checkExistById(resume.getId());
         if (!checkExists) {
-            throw new IdInvalidException("Mot found resume with id " + resume.getId());
+            throw new IdInvalidException("Not found resume with id " + resume.getId());
         }
 
         return ResponseEntity.ok().body(this.resumeService.update(resume));
@@ -82,7 +97,7 @@ public class ResumeController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/resumes/{id}")
+    @GetMapping("/{id}")
     @ApiMessage("Fetch a resume by id")
     public ResponseEntity<FetchResumeResponse> fetchById(
             @PathVariable("id") long id) throws IdInvalidException {
