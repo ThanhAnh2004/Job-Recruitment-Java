@@ -1,7 +1,9 @@
 package thanhanh.job_recruitment.controller;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +22,8 @@ public class EmailController {
 
     @GetMapping
     @ApiMessage("Send simple email")
+//    @Scheduled(cron = "0 0 0 * * Sun")
+//    @Transactional
     public String sendSimpleEmail() {
         //return this.emailService.sendSimpleEmail();
 
