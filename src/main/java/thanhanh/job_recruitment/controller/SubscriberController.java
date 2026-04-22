@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import thanhanh.job_recruitment.domain.Subscriber;
 import thanhanh.job_recruitment.service.SubscriberService;
+import thanhanh.job_recruitment.util.SecurityUtil;
 import thanhanh.job_recruitment.util.annotation.ApiMessage;
 import thanhanh.job_recruitment.util.exception.IdInvalidException;
 
@@ -49,5 +50,12 @@ public class SubscriberController {
                 .body(this.subscriberService.updateSubscriber(subscriber, subsDB));
     }
 
+    @PostMapping("/skills")
+    @ApiMessage("Get subscrber skill")
+    public ResponseEntity<Subscriber> getSubscriberSkill() {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get() : null;
 
+        return ResponseEntity.ok().body(this.subscriberService.findByEmail(email));
+    }
 }

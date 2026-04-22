@@ -16,6 +16,18 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalHandlerException {
+
+    // Handle all Exception
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<RestResponse<Object>> handleAllException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        res.setMessage(ex.getMessage());
+        res.setError("Internal Server Error");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+    }
+
+
     @ExceptionHandler(value = {
             UsernameNotFoundException.class,
             BadCredentialsException.class,
@@ -23,9 +35,9 @@ public class GlobalHandlerException {
     })
     public ResponseEntity<RestResponse<Object>> handleIdException (Exception exception) {
         RestResponse<Object> res = new RestResponse<>();
-        res.setError(exception.getMessage());
+        res.setMessage(exception.getMessage());
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setMessage("Exception occurs...");
+        res.setError("Exception occurs...");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
@@ -49,8 +61,8 @@ public class GlobalHandlerException {
     @ExceptionHandler(value = NoResourceFoundException.class)
     public ResponseEntity<RestResponse<Object>> handleNotFoundException (NoResourceFoundException exception) {
         RestResponse<Object> res = new RestResponse<>();
-        res.setError(exception.getMessage());
-        res.setMessage("Not found resource. UML not exist");
+        res.setMessage(exception.getMessage());
+        res.setError("Not found resource. UML not exist");
         res.setStatusCode(HttpStatus.NOT_FOUND.value());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
@@ -60,9 +72,9 @@ public class GlobalHandlerException {
     public ResponseEntity<RestResponse<Object>> handleUploadFileException (StorageException exception) {
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setError(exception.getMessage());
+        response.setMessage(exception.getMessage());
         response.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        response.setMessage("Exception upload file...");
+        response.setError("Exception upload file...");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -71,9 +83,9 @@ public class GlobalHandlerException {
     public ResponseEntity<RestResponse<Object>> handlePermissionException (PermissionException exception) {
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setError(exception.getMessage());
+        response.setMessage(exception.getMessage());
         response.setStatusCode(HttpStatus.FORBIDDEN.value());
-        response.setMessage("Forbidden...");
+        response.setError("Forbidden...");
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }

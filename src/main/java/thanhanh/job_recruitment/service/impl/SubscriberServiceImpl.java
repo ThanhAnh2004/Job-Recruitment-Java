@@ -79,6 +79,16 @@ public class SubscriberServiceImpl implements SubscriberService {
     }
 
     @Override
+    public Subscriber findByEmail(String email) {
+        Optional<Subscriber> subscriberOptional = this.subscriberRepository.findByEmail(email);
+
+        if (subscriberOptional.isPresent()) {
+            return subscriberOptional.get();
+        }
+        return null;
+    }
+
+    @Override
     public void sendSubscribersEmailJobs() {
         List<Subscriber> listSubs = this.subscriberRepository.findAll();
         if (listSubs != null && listSubs.size() > 0) {
