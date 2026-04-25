@@ -31,7 +31,7 @@ public class OpenSwaggerConfig {
 
     private Contact createContact() {
         return new Contact()
-                .email("thanhanh818757@gmail.com")
+                .email("thanhanhdz2004@gmail.com")
                 .name("Thành Ánh 2004");
                 //.url();
     }

@@ -12,6 +12,7 @@ import thanhanh.job_recruitment.dto.request.Job.CreateJobRequest;
 import thanhanh.job_recruitment.dto.request.Job.UpdateJobRequest;
 import thanhanh.job_recruitment.dto.response.ApiResponse.Meta;
 import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
+import thanhanh.job_recruitment.dto.response.Company.CompanyResponse;
 import thanhanh.job_recruitment.dto.response.Job.JobResponse;
 import thanhanh.job_recruitment.repository.CompanyRepository;
 import thanhanh.job_recruitment.repository.JobRepository;
@@ -35,7 +36,7 @@ public class JobServiceImpl implements JobService {
     public JobResponse createJob(CreateJobRequest request) {
 
         List<Skill> listSkills = new ArrayList<>();
-      // Check skills
+        // Check skills
         if (request.getSkills() != null) {
             List<Long> listSkillId = request.getSkills()
                     .stream().map(x -> x.getId()).toList();
@@ -45,7 +46,7 @@ public class JobServiceImpl implements JobService {
 
         // Check company
         Company company = new Company();
-        if(request.getCompany() != null) {
+        if (request.getCompany() != null) {
             Optional<Company> companyOptional = this.companyRepository.findById(request.getCompany().getId());
             if (companyOptional.isPresent()) {
                 company = companyOptional.get();
@@ -99,7 +100,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public JobResponse fetchJobById(long id) {
-       Job  currentJob = this.jobRepository.findById(id).get();
+        Job currentJob = this.jobRepository.findById(id).get();
 
         return this.mapperJobToJobResponse(currentJob);
     }
@@ -108,7 +109,7 @@ public class JobServiceImpl implements JobService {
     public ResultPagination fetchAllJob(Specification<Job> spec, Pageable pageable) {
         Page<Job> pageJob = this.jobRepository.findAll(spec, pageable);
 
-        List<JobResponse> pageJobResponse = pageJob.getContent().stream().map(job ->
+        List<JobResponse> listJobResponse = pageJob.getContent().stream().map(job ->
                 this.mapperJobToJobResponse(job)).toList();
 
         Meta meta = Meta.builder()
@@ -120,7 +121,7 @@ public class JobServiceImpl implements JobService {
 
         return ResultPagination.builder()
                 .meta(meta)
-                .result(pageJobResponse)
+                .result(listJobResponse)
                 .build();
     }
 
@@ -141,12 +142,26 @@ public class JobServiceImpl implements JobService {
                 .description(job.getDescription())
                 .startDate(job.getStartDate())
                 .endDate(job.getEndDate())
-                .companies(job.getCompany())
+                .company(job.getCompany() != null ? this.mapperCompanyToCompanyResponse(job.getCompany()) : null)
                 .skills(job.getSkills())
                 .createdAt(job.getCreatedAt())
                 .createBy(job.getCreatedBy())
                 .updatedAt(job.getUpdatedAt())
                 .updatedBy(job.getUpdatedBy())
+                .build();
+    }
+
+    private CompanyResponse mapperCompanyToCompanyResponse(Company company) {
+        return CompanyResponse.builder()
+                .id(company.getId())
+                .name(company.getName())
+                .address(company.getAddress())
+                .description(company.getDescription())
+                .logo(company.getLogo())
+                .createBy(company.getCreatedBy())
+                .createdAt(company.getCreatedAt())
+                .updatedBy(company.getUpdatedBy())
+                .updatedAt(company.getUpdatedAt())
                 .build();
     }
 }

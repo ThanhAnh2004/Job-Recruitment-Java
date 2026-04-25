@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import thanhanh.job_recruitment.domain.Company;
 import thanhanh.job_recruitment.domain.Skill;
+import thanhanh.job_recruitment.dto.response.Company.CompanyResponse;
 import thanhanh.job_recruitment.util.constant.LevelEnum;
 
 import java.time.Instant;
@@ -32,7 +33,7 @@ public class JobResponse {
     Instant startDate;
     Instant endDate;
     @JsonIgnoreProperties(value = {"jobs"})
-    Company companies;
+    CompanyResponse company;
     @JsonIgnoreProperties(value = {"jobs"})
     List<Skill> skills;
     Instant createdAt;
