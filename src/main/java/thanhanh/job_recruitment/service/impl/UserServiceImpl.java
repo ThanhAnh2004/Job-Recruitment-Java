@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import thanhanh.job_recruitment.domain.Company;
 import thanhanh.job_recruitment.domain.Role;
 import thanhanh.job_recruitment.domain.User;
+import thanhanh.job_recruitment.dto.request.User.UpdateUserRequest;
 import thanhanh.job_recruitment.dto.request.User.UserRequest;
 import thanhanh.job_recruitment.dto.response.ApiResponse.Meta;
 import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
@@ -107,25 +108,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse updateUser(User user) {
+    public UserResponse updateUser(UpdateUserRequest user) {
         User currentUser = this.userRepository.findById(user.getId()).get();
-        Optional<Company> companyOptional = this.companyRepository.findById(user.getCompany().getId());
 
-        if (companyOptional.isPresent()) {
-            Company company = companyOptional.get();
-            currentUser.setCompany(company);
+        if(user.getCompany() != null) {
+            Optional<Company> companyOptional = this.companyRepository.findById(user.getCompany().getId());
+            if (companyOptional.isPresent()) {
+                Company company = companyOptional.get();
+                currentUser.setCompany(company);
+            }
         }
 
-        Optional<Role> roleOptional = this.roleRepository.findById(user.getRole().getId());
-        if (roleOptional.isPresent()) {
-            Role role = roleOptional.get();
-            currentUser.setRole(role);
+        if (user.getRole() != null) {
+            Optional<Role> roleOptional = this.roleRepository.findById(user.getRole().getId());
+            if (roleOptional.isPresent()) {
+                Role role = roleOptional.get();
+                currentUser.setRole(role);
+            }
         }
 
-        currentUser.setName(user.getName());
-        currentUser.setEmail(user.getEmail());
-        currentUser.setPassword(user.getPassword());
-        currentUser.setRefreshToken(user.getRefreshToken());
+        if (user.getName() != null) {
+            currentUser.setName(user.getName());
+        }
+        if (user.getEmail() != null) {
+            currentUser.setEmail(user.getEmail());
+        }
+        if (user.getAge() > 0) {
+            currentUser.setAge(user.getAge());
+        }
+        if (user.getGender() != null) {
+            currentUser.setGender(user.getGender());
+        }
+        if (user.getAddress() != null) {
+            currentUser.setAddress(user.getAddress());
+        }
+
         this.userRepository.save(currentUser);
 
         return this.mapperUserToUserResponse(currentUser);

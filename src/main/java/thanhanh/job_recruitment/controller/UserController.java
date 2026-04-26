@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import thanhanh.job_recruitment.domain.User;
+import thanhanh.job_recruitment.dto.request.User.UpdateUserRequest;
 import thanhanh.job_recruitment.dto.request.User.UserRequest;
 import thanhanh.job_recruitment.dto.response.ApiResponse.ResultPagination;
 import thanhanh.job_recruitment.dto.response.User.UserResponse;
@@ -73,14 +74,13 @@ public class UserController {
 
     @PutMapping
     @ApiMessage("Update a user")
-    public ResponseEntity<UserResponse> updateUser (@RequestBody User user) throws IdInvalidException {
+    public ResponseEntity<UserResponse> updateUser (@Valid @RequestBody UpdateUserRequest user) throws IdInvalidException {
 
         boolean checkId = this.userService.existsById(user.getId());
         if (!checkId) {
             throw new IdInvalidException("Not found user with id: " + user.getId());
         }
 
-        UserResponse currentUser = this.userService.updateUser(user);
-        return ResponseEntity.status(HttpStatus.OK).body(currentUser);
+        return ResponseEntity.status(HttpStatus.OK).body(this.userService.updateUser(user));
     }
 }

@@ -3,6 +3,7 @@ package thanhanh.job_recruitment.config;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,6 +21,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import thanhanh.job_recruitment.util.SecurityUtil;
+import tools.jackson.databind.DeserializationFeature;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -112,6 +114,12 @@ public class SecurityConfiguration {
                 throw e;
             }
         };
+    }
+
+    @Bean
+    public JsonMapperBuilderCustomizer customizer() {
+        return builder -> builder
+                .disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES);
     }
 
 

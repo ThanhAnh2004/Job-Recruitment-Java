@@ -1,18 +1,24 @@
 package thanhanh.job_recruitment.dto.request.User;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import thanhanh.job_recruitment.domain.Company;
 import thanhanh.job_recruitment.domain.Role;
 import thanhanh.job_recruitment.util.constant.GenderEnum;
 
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
+@Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserRequest {
+public class UpdateUserRequest {
+    @NotNull(message = "User id is not be empty")
+    Long id;
+
     String name;
     String email;
-    String password;
     int age;
     GenderEnum gender;
     String address;
@@ -32,5 +38,4 @@ public class UserRequest {
         private long id;
         private String name;
     }
-
 }
