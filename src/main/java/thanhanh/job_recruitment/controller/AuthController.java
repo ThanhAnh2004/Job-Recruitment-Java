@@ -43,6 +43,10 @@ public class AuthController {
     @Value("${jwt.refresh-token-validity-in-seconds}")
     long refreshTokenExpiration;
 
+    @NonFinal
+    @Value("${app.cookie.secure:false}")
+    boolean secureCookie;
+
     @PostMapping("/login")
     @ApiMessage("Login success")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
@@ -86,7 +90,7 @@ public class AuthController {
         ResponseCookie resCookies = ResponseCookie
                 .from("refresh_token", refreshToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(secureCookie)
                 .path("/")
                 .maxAge(refreshTokenExpiration)
                 .build();
@@ -163,7 +167,7 @@ public class AuthController {
         ResponseCookie resCookies = ResponseCookie
                 .from("refresh_token", newRefreshToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(secureCookie)
                 .path("/")
                 .maxAge(refreshTokenExpiration)
                 .build();
@@ -187,7 +191,7 @@ public class AuthController {
         }
 
         ResponseCookie deleteCookies = ResponseCookie.from("refresh_token", null)
-                .secure(true)
+                .secure(secureCookie)
                 .httpOnly(true)
                 .path("/")
                 .maxAge(0)
