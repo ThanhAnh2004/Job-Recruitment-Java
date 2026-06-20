@@ -18,6 +18,7 @@ import thanhanh.job_recruitment.repository.CompanyRepository;
 import thanhanh.job_recruitment.repository.JobRepository;
 import thanhanh.job_recruitment.repository.SkillRepository;
 import thanhanh.job_recruitment.service.JobService;
+import thanhanh.job_recruitment.service.UserService;
 import thanhanh.job_recruitment.util.exception.IdInvalidException;
 
 import java.util.ArrayList;
@@ -30,10 +31,21 @@ public class JobServiceImpl implements JobService {
     private final JobRepository jobRepository;
     private final SkillRepository skillRepository;
     private final CompanyRepository companyRepository;
-
+    private final UserService userService;
 
     @Override
     public JobResponse createJob(CreateJobRequest request) {
+        String email = thanhanh.job_recruitment.util.SecurityUtil.getCurrentUserLogin().isPresent()
+                ? thanhanh.job_recruitment.util.SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        if (!email.equals("admin@gmail.com") && !email.isEmpty()) {
+            thanhanh.job_recruitment.domain.User currentUser = this.userService.fetchUserByEmail(email);
+            if (currentUser != null && (currentUser.getCompany() == null ||
+                    request.getCompany() == null ||
+                    currentUser.getCompany().getId() != request.getCompany().getId())) {
+                throw new thanhanh.job_recruitment.util.exception.PermissionException("Bạn chỉ có thể tạo việc làm cho công ty của mình!");
+            }
+        }
 
         List<Skill> listSkills = new ArrayList<>();
         // Check skills
@@ -75,6 +87,23 @@ public class JobServiceImpl implements JobService {
     public JobResponse updateJob(UpdateJobRequest request) {
         Job currentJob = this.jobRepository.findById(request.getId()).get();
 
+        String email = thanhanh.job_recruitment.util.SecurityUtil.getCurrentUserLogin().isPresent()
+                ? thanhanh.job_recruitment.util.SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        if (!email.equals("admin@gmail.com") && !email.isEmpty()) {
+            thanhanh.job_recruitment.domain.User currentUser = this.userService.fetchUserByEmail(email);
+            if (currentUser != null) {
+                if (currentJob.getCompany() == null || currentUser.getCompany() == null ||
+                        currentJob.getCompany().getId() != currentUser.getCompany().getId()) {
+                    throw new thanhanh.job_recruitment.util.exception.PermissionException("Bạn chỉ có thể cập nhật việc làm của công ty mình!");
+                }
+                if (request.getCompany() == null ||
+                        request.getCompany().getId() != currentUser.getCompany().getId()) {
+                    throw new thanhanh.job_recruitment.util.exception.PermissionException("Bạn không thể thay đổi công ty của việc làm sang công ty khác!");
+                }
+            }
+        }
+
         currentJob.setName(request.getName());
         currentJob.setLocation(request.getLocation());
         currentJob.setSalary(request.getSalary());
@@ -90,7 +119,6 @@ public class JobServiceImpl implements JobService {
         this.jobRepository.save(currentJob);
 
         return this.mapperJobToJobResponse(currentJob);
-
     }
 
     @Override
@@ -127,6 +155,19 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public void deleteJobById(long id) {
+        String email = thanhanh.job_recruitment.util.SecurityUtil.getCurrentUserLogin().isPresent()
+                ? thanhanh.job_recruitment.util.SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        if (!email.equals("admin@gmail.com") && !email.isEmpty()) {
+            thanhanh.job_recruitment.domain.User currentUser = this.userService.fetchUserByEmail(email);
+            Job job = this.jobRepository.findById(id).orElse(null);
+            if (currentUser != null && job != null) {
+                if (job.getCompany() == null || currentUser.getCompany() == null ||
+                        job.getCompany().getId() != currentUser.getCompany().getId()) {
+                    throw new thanhanh.job_recruitment.util.exception.PermissionException("Bạn chỉ có thể xóa việc làm của công ty mình!");
+                }
+            }
+        }
         this.jobRepository.deleteById(id);
     }
 

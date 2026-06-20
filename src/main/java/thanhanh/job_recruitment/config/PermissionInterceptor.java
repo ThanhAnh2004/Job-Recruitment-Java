@@ -37,6 +37,14 @@ public class PermissionInterceptor implements HandlerInterceptor {
         System.out.println(">>> requestURI= " + requestURI);
 
         // check permission
+        if (httpMethod.equals("GET") && (
+                path.startsWith("/api/v1/companies") ||
+                path.startsWith("/api/v1/jobs") ||
+                path.startsWith("/api/v1/skills")
+        )) {
+            return true;
+        }
+
         String email = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
