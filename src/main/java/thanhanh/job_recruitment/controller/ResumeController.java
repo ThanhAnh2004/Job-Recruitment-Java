@@ -119,29 +119,31 @@ public class ResumeController {
             Pageable pageable
     ) {
 
-        List<Long> listJobId = new ArrayList<>();
-
         String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
                 ? SecurityUtil.getCurrentUserLogin().get() : null;
 
-        User currentUer = this.userService.fetchUserByEmail(email);
+        Specification<Resume> finalSpec = spec;
 
-        if(currentUer != null) {
-            Company userCompany = currentUer.getCompany();
-            if (userCompany != null) {
-                List<Job> companyJob = userCompany.getJobs();
-                if (companyJob != null && !companyJob.isEmpty()) {
-                    listJobId = companyJob.stream().map(x -> x.getId()).toList();
+        if (email != null && !email.equals("admin@gmail.com")) {
+            List<Long> listJobId = new ArrayList<>();
+            User currentUer = this.userService.fetchUserByEmail(email);
+
+            if(currentUer != null) {
+                Company userCompany = currentUer.getCompany();
+                if (userCompany != null) {
+                    List<Job> companyJob = userCompany.getJobs();
+                    if (companyJob != null && !companyJob.isEmpty()) {
+                        listJobId = companyJob.stream().map(x -> x.getId()).toList();
+                    }
                 }
             }
+
+            Specification<Resume> jobInSpec = filterSpecificationConverter.convert(
+                    filterBuilder.field("job").in(filterBuilder.input(listJobId)).get()
+            );
+
+            finalSpec = jobInSpec.and(spec);
         }
-
-        Specification<Resume> jobInSpec = filterSpecificationConverter.convert(
-                filterBuilder.field("job").in(filterBuilder.input(listJobId)).get()
-        );
-
-        Specification<Resume> finalSpec = jobInSpec.and(spec);
-
 
         return ResponseEntity.ok().body(this.resumeService.fetchAllResume(finalSpec, pageable));
     }

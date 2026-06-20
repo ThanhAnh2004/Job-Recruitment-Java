@@ -87,6 +87,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResultPagination fetchAllUser(Specification<User> spec, Pageable pageable) {
+        String email = thanhanh.job_recruitment.util.SecurityUtil.getCurrentUserLogin().orElse("");
+        if (!email.equals("admin@gmail.com") && !email.isEmpty()) {
+            User currentUser = this.userRepository.findByEmail(email).orElse(null);
+            if (currentUser != null && currentUser.getCompany() != null) {
+                final long companyId = currentUser.getCompany().getId();
+                Specification<User> companySpec = (root, query, cb) -> cb.equal(root.get("company").get("id"), companyId);
+                spec = spec == null ? companySpec : spec.and(companySpec);
+            } else {
+                // If not global admin and has no company, return empty result
+                return ResultPagination.builder()
+                        .meta(new Meta())
+                        .result(java.util.Collections.emptyList())
+                        .build();
+            }
+        }
 
         Page<User> pageUser = this.userRepository.findAll(spec, pageable);
 
