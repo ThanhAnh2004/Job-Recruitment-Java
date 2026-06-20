@@ -113,8 +113,24 @@ public class JobServiceImpl implements JobService {
         currentJob.setDescription(request.getDescription());
         currentJob.setStartDate(request.getStartDate());
         currentJob.setEndDate(request.getEndDate());
-        currentJob.setCompany(request.getCompany());
-        currentJob.setSkills(request.getSkills());
+        // Check company
+        Company company = null;
+        if (request.getCompany() != null) {
+            Optional<Company> companyOptional = this.companyRepository.findById(request.getCompany().getId());
+            if (companyOptional.isPresent()) {
+                company = companyOptional.get();
+            }
+        }
+        currentJob.setCompany(company);
+
+        // Check skills
+        List<Skill> listSkills = new ArrayList<>();
+        if (request.getSkills() != null) {
+            List<Long> listSkillId = request.getSkills()
+                    .stream().map(x -> x.getId()).toList();
+            listSkills = this.skillRepository.findByIdIn(listSkillId);
+        }
+        currentJob.setSkills(listSkills);
 
         this.jobRepository.save(currentJob);
 

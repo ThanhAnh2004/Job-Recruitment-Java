@@ -57,6 +57,14 @@ public class RoleServiceImpl implements RoleService {
         currentRole.setDescription(role.getDescription());
         currentRole.setActive(role.isActive());
 
+        List<Permission> listPermission = new ArrayList<>();
+        if (role.getPermissions() != null) {
+            List<Long> listPermissionId = role.getPermissions().stream()
+                    .map(x -> x.getId()).toList();
+            listPermission = this.permissionRepository.findByIdIn(listPermissionId);
+        }
+        currentRole.setPermissions(listPermission);
+
         this.roleRepository.save(currentRole);
 
         return this.mapperRoleToRoleResponse(currentRole);

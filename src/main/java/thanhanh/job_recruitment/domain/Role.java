@@ -48,7 +48,6 @@ public class Role {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = "roles")
-    @JsonIgnore
     @JoinTable(name = "permission_role", joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private List<Permission> permissions;
